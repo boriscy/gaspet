@@ -1,0 +1,439 @@
+<% @html = '<h1 class="title">Asignación Mercado Interno</h1><br/>
+<div><span id="importar"></span></div><br/><br/>
+<div style="width:200px" class="fl">
+  <label class="fl">Año: </label><div style="width:110px" class="fl">'+"#{select_year(Time.now, :start_year => 1990)}"+'</div>'+
+'</div>
+<div class="fl" style="width:300px">
+  <label class="fl">Mes: </label><div style="width:160px" class="fl">'+"#{select_month Time.now, :id => "mes"}"+
+  '</div></div><div class="fl" style="width:200px"><label class="fl">Total: </label><div style="width:120px" class="fl"><span id="stotal"></span></div></div>
+  <div class="fl"><span id="boton"></span></div>
+<div style="clear:both; height:10px"></div>'
+%>
+
+//<script>
+
+
+html = '<%= @html.squish %>';
+jQuery('#centro').html('<%= @html.squish %>');
+
+/**
+*Store para la lista de campos
+*/
+var campo_store = new Ext.data.SimpleStore({"fields": ["id", "nombre"], "data": <%= combo_data(Campo.find :all) %>} );
+
+
+var ds = new Ext.data.JsonStore({
+    url:'/asignaciones/lista',
+    totalProperty: 'total',
+    root: 'data',
+    fields: [{
+        name: "id"},{
+        "name": "campo_id"},{
+        "name": "contrato"},{
+        "name": "operador"},{
+        "name": "area"},{
+        "name": "campo"},{
+        "name": "porcentaje"},{
+        "name": "volumen"},{
+        "name": "volumen_ypfb"},{
+        "name": "saldo_mes"
+      }],
+    sortInfo: {
+      field: 'id',
+      direction: 'DESC'
+    },
+    //remoteSort: true,
+    baseParams: {
+      authenticity_token: AUTH_TOKEN
+    }
+});
+ds.loadData({total: <%= @asignaciones.length %>, data: <%= @asignaciones.to_json %>});
+
+
+/**********************************************************
+* Columns model para el Grid, con editores
+*/
+var cm = new Ext.grid.ColumnModel(
+  [{
+    dataIndex: "operador", "width": 200, "header": "Operador"
+  },{
+    dataIndex: 'contrato', width: 70, header: 'Contrato', hidden: true
+  },{
+    dataIndex: "area", "width": 150, "header": "Area"
+  },{
+    dataIndex: "campo", width: 150, "header": "Campo"
+  },{
+    dataIndex: "porcentaje", "width": 85, "header": "Porcentaje", align: 'right', renderer: porcentaje,
+    editor: new Ext.form.NumberField({maxValue: 100, allowNegative: false}),
+    summaryType: 'sum'
+  },{
+    dataIndex: "volumen", "width": 100, "header": "Volúmen", align: 'right', renderer: decimal,
+    editor: new Ext.form.NumberField({ allowNegative: false}), summaryType: 'sum'
+  },{
+    dataIndex: "volumen_ypfb", width: 100, header: 'Vol YPFB', align: 'right', renderer: decimal,
+    editor: new Ext.form.NumberField({ allowNegative: false}), summaryType: 'sum'
+  },{
+    // Es necesario
+    dataIndex: Ext.id(), width: 100, header: 'Diferencia', align: 'right', renderer: decimal, summaryType: 'diferencia',
+    renderer: function(v, params, record) {
+      var val1 = record.data.volumen_ypfb;
+      var val2 = record.data.volumen;
+      var temp = val1 - val2;
+      return decimal(temp);
+    }
+  },{
+    dataIndex: "saldo_mes", "width": 85, "header": "Saldo mes", align: 'right', summaryType: 'sum'
+  }]
+);
+
+
+
+
+// Funcion para diferencias de volumen entre volumen y volumen_ypfb
+Ext.ux.grid.GridSummary.Calculations['diferencia'] = function(v, record, field){
+  return v + (record.get('volumen') - record.get('volumen_ypfb'));
+}
+
+var summary = new Ext.ux.grid.GridSummary();
+
+
+var gridError = new Ext.grid.showGridError({id: 'campo_id'});
+/*****************************************************
+ *
+* Creación del Grid de asignaciones
+*/
+var grid = new Ext.grid.EditorGridPanel({
+    store: ds,
+    cm: cm,
+    id: 'grid',
+    renderTo: 'centro',
+    width: 950,
+    height: 400,
+    plugins:[summary, gridError],
+    clicksToEdit:1,
+    title: 'Asignaciones',
+    // Evento que permite actualizar el valor del volumen si se cambia el porcentaje
+    listeners: {
+      afteredit: {
+        fn: function(e) {
+          if(e.field == 'porcentaje') {
+            var tot = (e.value/100) * jQuery('#total').val();
+            e.record.set('volumen', tot);
+          }
+        }, scope: grid
+      }
+    }
+});
+
+
+/**
+* Función que permite desagregar el total ingresao de la producción
+*/
+function desagregarTotal() {
+  s = Ext.getCmp('grid').store.data.items;
+  tot = Ext.getCmp('total').getValue();
+  Ext.each(s, function(item){
+    item.data.volumen = (item.data.porcentaje/100)*tot;
+    //item.endEdit();
+  }, s);
+  Ext.getCmp('grid').getView().refresh();
+}
+
+
+/**
+* Funcion que permite salvar los datos de la Tabla
+*/
+function salvar_datos() {
+  var items = Ext.getCmp('grid').store.data.items;
+  var data = new Array();
+  Ext.each(items, function(item, i) {
+    data[i]['porcentaje'] = item.data.porcentaje;
+    data[i]['volumen'] = item.data.volumen;
+  });
+}
+
+/**
+* Creación de los campos para ingresar datos, Maestro
+*/
+new Ext.form.ComboBox({
+  transform: 'date_year',
+  triggerAction: 'all',
+  width: 80
+});
+new Ext.form.ComboBox({
+  transform: 'date_month',
+  triggerAction: 'all',
+  width: 100
+});
+new Ext.form.NumberField({
+  renderTo:'stotal',
+  id:'total',
+  cls:'right',
+  listeners: {
+    specialkey: {fn: desagregarTotal},
+    blur: {fn: desagregarTotal}
+  }
+});
+
+
+
+/**
+* Clase que permite realizar la importacion de datos
+*/
+Importar = Ext.extend(Ext.util.Observable, {
+
+  volumen_ypfb_col: 6, //Columna que indica en el grid en que columna se encuentra
+  sw: true,
+  importar: function() {
+    
+    var w = new Ext.Window({
+      title: 'Importar Datos',
+      width: 400, modal: true,
+      items:[{
+        xtype: 'form',
+        fileUpload: true,
+        // Url al cual se envia el archivo
+        url: '/asignaciones/importar',
+        maskDisabled: false,
+        labelWidth: 70,
+        bodyStyle: 'padding: 4px',
+        items:[{
+          xtype: 'hidden', name: 'authenticity_token', value: AUTH_TOKEN
+        },{
+          xtype:'textfield', fieldLabel: 'Archivo', width: 300, inputType: 'file', name: 'file'
+        }],
+        buttons:[{
+          text:'Importar',
+          handler: this.importarDatos,
+          scope: this
+        }]
+      }]
+    });
+    w.show();
+    this.window = w;
+    this.forma = w.items.itemAt(0);
+  }, 
+  /**
+   * Se importan los datos
+   */
+  importarDatos: function() {
+    this.forma.getForm().submit({
+      scope: this,
+      success: function(a, b) {
+        
+        try {
+          var res = Ext.decode(b.response.responseText);
+        } catch (e) {
+          b.failure();
+          return false;
+        }
+        if(res.success) {
+          this.window.close();
+          this.mostrarDatos(res.data);
+        }
+        //this.forma.getComponent('archivo').reset('');
+      },
+      failure: function(a, b) {
+        Ext.Msg.show({
+          title:'Error',
+          msg:'Existio un Error al importar el archivo.',
+          buttons: Ext.MessageBox.OK,icon:Ext.MessageBox.ERROR
+        });
+      }
+    });
+  },
+  /**
+  * Presenta los datos en el Grid
+  * @param Array data Datos que fueron importados del archivo que se subio al servidor
+  */
+  mostrarDatos: function(data) {
+    var grid = Ext.getCmp('grid');
+    var view = grid.getView();
+    var st = grid.getStore();
+    var errors = [];
+    var listaPos = [];
+    Ext.each(data, function(item){
+      var pos = st.findBy(function(it){
+        return it.data.campo == item.campo
+      });
+      if(pos > -1) {
+        var record = st.getAt(pos);
+        var temp = record.data.volumen_ypfb;
+        record.data.volumen_ypfb = item.volumen_ypfb;
+        //record.set('volumen_ypfb', item.volumen_ypfb);
+        try {
+          record.modified = {'volumen_ypfb': temp};
+          listaPos.push(pos);
+        } catch (e) {}
+      }else{
+        errors.push(item.campo);
+      }
+    });
+    // Actualización de la vista
+    grid.view.refresh();
+
+    // Mostrar errores si hay
+    if(errors.length > 0) {
+      Ext.Msg.show({
+        title:'Error',
+        width: 400,
+        msg:'Existio un Error al importar algunos datos, los siguientes campos tienen errores: '+errors.join(", "),
+        buttons: Ext.MessageBox.OK,icon:Ext.MessageBox.ERROR
+      });
+    }
+    // Presenta las modificaciones realizadas
+    this.volumen_ypfb_col = this.searchColumn(grid, 'volumen_ypfb');
+    for(var k in listaPos) {
+      try {
+        view.getCell(listaPos[k], this.volumen_ypfb_col).className += ' x-grid3-dirty-cell';
+      } catch (e) {}
+    }
+    
+  },
+  /**
+  * Busca la columna en la que se encuentra un campo
+  * @param object grid Grid en el cual se realiza la busqueda
+  * @param string field Campo que se busca
+  * @return integer
+  */
+  searchColumn: function(grid, field) {
+    var cm = grid.getColumnModel();
+    for(var i = 0, l = cm.config.length; i< l; i++) {
+      if(cm.config[i].dataIndex == field) {
+        return i;
+      }
+    }
+    return -1;
+  }
+});
+
+
+
+/**
+* Boton que presenta el formulario para poder realizar la importacion de datos
+*/
+var imp = new Importar();
+new Ext.Button({
+  id:'boton_importar',
+  text: 'Importar Datos',
+  renderTo: 'importar',
+  iconCls:'rails-upload ',
+  handler: function() { imp.importar()}
+});
+
+/**
+* Boton que permite guardar del grid y de los datos ingresados los totales
+*/
+new Ext.Button({
+  id:'boton_guardar',
+  text: 'Guardar',
+  renderTo: 'boton',
+  //disabled: true,
+  handler: function() {
+    var st = Ext.getCmp('grid').getStore();
+    var params = [];
+    // Campos de que se deben guardar y que sirven para la actualizacion
+    var campos = ['id', 'porcentaje', 'volumen', 'volumen_ypfb', 'saldo_mes', 'campo_id'];
+    Ext.each(st.data.items, function(item, i) {
+      if(item.modified) {
+        for(var k = 0,l = campos.length; k< l; k++) {
+          params.push(item.data);
+          if(campos[k] == 'porcentaje') {
+            params['asignacion['+i+']['+campos[k]+']'] = item.data[campos[k]] / 100;
+          }else{
+            params['asignacion['+i+']['+campos[k]+']'] = item.data[campos[k]];
+          }
+        }
+      }
+    });
+    params['fecha'] = '01-'+Ext.get('date[month]').getValue()+'-'+Ext.get('date[year]').getValue();
+    params['volumen_total'] = Ext.get('total').getValue();
+    params['authenticity_token'] = AUTH_TOKEN;
+    
+    Ext.Ajax.request({
+    url: '/asignaciones/guardar',
+    params: params,
+    success: function(resp, o) {
+      try{
+        var res = Ext.decode(resp.responseText);
+        if(!res.success) {
+          Ext.getCmp('grid').plugins[1].setErrors(res.asignacion.errors); ////////////////////////////////////////////777
+          o.failure()
+        }
+      }catch(e){
+        o.failure();
+      }
+    },
+    failure: function(){
+      new Ext.Msg.show({
+        title:'Error',
+        msg:'Existio un Error al guardar los datos.',
+        buttons: Ext.MessageBox.OK,icon:Ext.MessageBox.ERROR
+      });
+    }
+  });
+    
+  }
+});
+
+// Captura del indice: Ext.getCmp('grid').store.indexOf(r);
+
+/*******
+* Procedimiento para poder añadir mas registros
+var Record = Ext.data.Record.create([
+  {name: 'id', type: 'integer'},
+  {name: 'campo_id', type: 'integer'},
+  {name: 'contrato', type: 'string'},
+  {name: 'operador', type: 'string'},
+  {name: 'area', type: 'string'},
+  {name: 'campo', type: 'string'},
+  {name: 'porcentaje', type: 'float'},
+  {name: 'volumen', type: 'float'},
+  {name: 'volumen_ypfb', type: 'float'},
+  {name: 'saldo_mes', type: 'float'}
+]);
+
+p = new Record({
+id: 1, campo_id:1, contrato: 'Ñeñe',
+operador:'MUUU', area:'Ni idea', campo:'kk',
+porcentaje: 10, volumen: 12, volumen_ypfb: 11.1,
+saldo_mes: 1
+});
+grid = Ext.getCmp('grid');
+grid.stopEditing();
+grid.store.insert(0, p);
+grid.startEditing(0, 0);
+// Extras para poder enfocarse en una celda o seleccionar una de ellas
+Ext.getCmp('grid').getView().focusCell(1,3);
+Ext.getCmp('grid').getSelectionModel().select(0,4);
+*
+new Ext.form.FormPanel({
+id:'forma',
+items: [{
+html: '<div id="fecha" style="background:red"></div>',
+}],
+renderTo: Ext.getBody()
+});
+new Ext.form.DateField({id: 'fechaExt', format: 'd-m-Y', renderTo: 'fecha' });
+
+Como registrar QuickTips
+q = Ext.QuickTips.getQuickTip();
+q.register({target: Ext.query('p')[0], text:'Error', cls:'x-form-invalid-tip'});
+
+
+grid = Ext.getCmp('grid');
+store = grid.getStore();
+view = grid.getView();
+index = store.findBy(function(item){ return item.data.campo == 'NARANJILLOS'});
+v = view.getCell(index, 0);
+q = Ext.QuickTips.getQuickTip();
+q.register({target: v, text: 'Error', cls: 'x-form-invalid-tip'});
+
+c = Ext.ComponentMgr.all.items;
+for(var i = c.length; i > 5 ;i--) {
+  try{
+    Ext.getCmp(c[i].id).destroy();
+  }catch(e) {}
+}
+Ext.ComponentMgr.all.items.length;
+*/

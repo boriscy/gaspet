@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  fecha: 2008-12-05
+  volumen_total: 9.99
+
+two:
+  fecha: 2008-12-06
+  volumen_total: 9.99

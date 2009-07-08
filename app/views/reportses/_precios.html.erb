@@ -1,0 +1,24 @@
+<h3 class="c_verde">Fuente: bloomberg.com</h3>
+<% g =  GraphicsHidro.new() %>
+
+  <div style="width:560px;float:left">
+    <%= g.grafico_precios(data, :tipo => tipo) %>
+  </div>
+  <div style="float:left">
+    <% tit = tipo == 'wti' ? "Petroleo" : "GAS" %>
+    
+    <h2>Precios internacionales <%= tit %></h2>
+    <table class="grid">
+      <tr>
+        <th class="ui-widget-header">Fecha</th>
+        <th class="ui-widget-header">Precio en $us</th>
+      </tr>
+      <% data.each do |v| %>
+        <tr>
+          <td><%= l v.fecha, :format => "%d de %b %Y" %></td>
+          <td class="num"><%= ntc v.send(tipo) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div style="clear:both"></div>

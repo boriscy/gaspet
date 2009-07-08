@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  zona_comercial_id: 1
+  producto_id: 1
+  fecha: 2009-04-19
+  programado: 9.99
+  comercializado: 9.99
+  cumplimiento: 9.99
+  importado: false
+
+two:
+  zona_comercial_id: 1
+  producto_id: 1
+  fecha: 2009-04-19
+  programado: 9.99
+  comercializado: 9.99
+  cumplimiento: 9.99
+  importado: false

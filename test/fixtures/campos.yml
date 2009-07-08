@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  nombre: Campo1
+  codigo: CMP1
+  area: one
+  departamento: one
+
+two:
+  nombre: Campo2
+  codigo: CMP2
+  area: two
+  departamento: two

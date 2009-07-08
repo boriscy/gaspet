@@ -1,0 +1,1 @@
+require 'ror_role'

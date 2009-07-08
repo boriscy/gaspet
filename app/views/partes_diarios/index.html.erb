@@ -1,0 +1,57 @@
+<% ultimos = ParteDiario.find(:all, :limit => 3, :order => "fecha DESC", :select => "DISTINCT(fecha) AS fecha") %>
+<h3>Ultimos</h3>
+<ul>
+<% ultimos.each do |fecha| %>
+<li><%= l fecha.fecha, :format => "%d de %B de %Y" %></li>
+<% end %>
+</ul>
+
+<% if !request.xml_http_request? %>
+<%= render :partial => 'forma_importar'%>
+
+<div class="input">
+<label for="buscar-fecha">Fecha:</label><input type="text" name="fecha" id="buscar-fecha" class="fecha"  value="<%= Time.now.strftime("%d-%m-%Y") %>"/>
+</div>
+<h2>Parte Diario <span id="span-fecha"><%= Time.now.strftime("%d-%m-%Y") %></span></h2>
+<% end %>
+
+<div id="div-grid">
+  <table class="grid">
+    <tr>
+      <th class="ui-widget-header">Campo</th>
+      <% @cols.each do |k| %>
+      <th class="ui-widget-header" style="width:150px"><%= k.humanize %></th>
+      <% end %>
+    </tr>
+    <%= render :partial => "listado", :collection => @datos, :locals => {:cols => @cols} %>
+  </table>
+</div>
+
+<script>
+  (function($){
+    $(document).ready(function() {
+      $('#buscar-fecha').datepicker({
+        onSelect: function(fecha, obj) {
+          //console.log(arguments);
+          $('#div-grid').load('/partes_diarios/index/'+fecha, function() {
+            $('#span-fecha').html(fecha);
+          });
+        },
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true
+      });
+    });
+  })(jQuery);
+
+
+  /*$('#parte_diario').submit(function(){
+    var data = $('#parte_diario').serializeArray();
+    $.ajax({
+      type:'post', url:'/partes_diarios/save',
+      data: data,
+      success: function(){console.log(arguments);}
+    })
+    return false;
+  });*/
+
+</script>

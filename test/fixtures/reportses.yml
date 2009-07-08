@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  fecha: 2009-03-20
+  noticias: MyText
+  produccion: MyText
+  precios: MyText
+  recepciones: MyText
+  saldos: MyText
+
+two:
+  fecha: 2009-03-21
+  noticias: MyText
+  produccion: MyText
+  precios: MyText
+  recepciones: MyText
+  saldos: MyText

@@ -1,0 +1,92 @@
+<% if @editor %>
+  <% @combo_stores.each do |v| %>
+  var <%= v[:name]  %>_store = new Ext.data.SimpleStore(<%= v[:def].to_json  %> );
+  <% end %>
+<% end %>
+
+var ds = new Ext.data.JsonStore({
+url:'/archivos/index',
+    totalProperty: 'total',
+    root: 'data',
+    fields: <%= @store.to_json %>,
+    sortInfo: {
+        field: 'id',
+        direction: 'DESC'
+    },
+    remoteSort: true,
+    baseParams: {
+        authenticity_token: AUTH_TOKEN
+    }
+});
+
+var cm = new Ext.grid.ColumnModel(
+    <%= @cm.to_json %>
+);
+
+var filters = new Ext.grid.GridFilters({
+    filters:<%= @filters.to_json %>
+});
+
+
+<% if @editor  %>
+var data_record = Ext.data.Record.create(
+    <%= @record.to_json %>
+);
+
+var grid = new Ext.grid.EditorGridPanel({
+    store: ds,
+    cm: cm,
+    id: 'gr',
+    renderTo: '',
+    width: 700,
+    height: 300,
+    title: '',
+    plugins: [filters],
+    clicksToEdit:1,
+
+    tbar: [{
+        text: 'Add Plant',
+        iconCls: 'rails-add',
+        handler : function(){
+            var p = new Plant({
+                common: 'New Plant 1',
+                light: 'Mostly Shade',
+                price: 0,
+                availDate: (new Date()).clearTime(),
+                indoor: false
+            });
+            grid.stopEditing();
+            store.insert(0, p);
+            grid.startEditing(0, 0);
+        }
+    }]
+});
+<% else %>
+var grid = new Ext.grid.EditorGridPanel({
+    store: ds,
+    cm: cm,
+    id: 'gr',
+    renderTo: '',
+    width: 700,
+    height: 300,
+    title: '',
+    plugins: [filters],
+    clicksToEdit:1,
+
+    tbar: [{
+        text: 'Adicionar',
+        handler : function(){
+            var p = new Plant({
+                common: 'New Plant 1',
+                light: 'Mostly Shade',
+                price: 0,
+                availDate: (new Date()).clearTime(),
+                indoor: false
+            });
+            grid.stopEditing();
+            store.insert(0, p);
+            grid.startEditing(0, 0);
+        }
+    }]
+});
+<% end %>

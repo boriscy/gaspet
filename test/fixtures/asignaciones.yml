@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  campo_id: 1
+  volumen_asignado_id: 1
+  porcentaje: 9.99
+  volumen: 9.99
+  saldo_mes: 9.99
+
+two:
+  campo_id: 1
+  volumen_asignado_id: 1
+  porcentaje: 9.99
+  volumen: 9.99
+  saldo_mes: 9.99

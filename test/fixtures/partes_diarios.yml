@@ -1,0 +1,187 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  campo: one
+  fecha: 2009-01-01
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+two:
+  campo: two
+  fecha: 2009-01-01
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+three:
+  campo: one
+  fecha: 2009-01-02
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+four:
+  campo: two
+  fecha: 2009-01-02
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+five:
+  campo: one
+  fecha: 2009-01-03
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+six:
+  campo: two
+  fecha: 2009-01-03
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+seven:
+  campo: one
+  fecha: 2009-01-04
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0
+
+eight:
+  campo: two
+  fecha: 2009-01-04
+  produccion_liquidos: 1.0
+  petroleo: 2.0
+  condensado: 1.0
+  densidad_api: 2.0
+  gasolina: 1.0
+  agua: 2.0
+  petroleo_entregado: 1.0
+  produccion_gas: 2.0
+  inyeccion: 1.0
+  entregado_gasoducto: 2.0
+  entregado_proceso: 1.0
+  licuables: 2.0
+  glp_mc: 1.0
+  combustible: 2.0
+  residual: 1.0
+  quemado: 2.0
+  co2: 1.0
+  saldo_petroleo: 2.0
+  saldo_glp: 1.0

@@ -1,0 +1,15 @@
+<% zonas_comerciales ||= ZonaComercial.all().map{|zona| [zona.nombre, zona.id]} %>
+<% productos ||= Producto.all().map{|prod| [prod.nombre, prod.id ]} %>
+<% @cont ||= 0 %>
+<% name = "recepcion[#{@cont}]" %>
+<tr>
+  <%= hidden_field name, "fecha", :value => @fecha %>
+  <td><%= select(name, "zona_comercial_id", zonas_comerciales,
+      {:selected => recepcion.try(:zona_comercial_id), :include_blank => true},
+        {:class => ("error" if recepcion.errors[:zona_comercial_id]), :error => recepcion.errors[:zona_comercial_id] })  %></td>
+  <td><%= select(name, "producto_id", productos, {:selected => recepcion.producto_id})  %></td>
+  <td><input type="text" name="<%= name %>[programado]" class="dec" value="<%= recepcion.try(:programado).to_s %>" /></td>
+  <td><input type="text" name="<%= name %>[comercializado]" class="dec" value="<%= recepcion.try(:comercializado).to_s %>" /></td>
+  <td><input type="text" name="<%= name %>[cumplimiento]" class="dec" value="<%= recepcion.try(:cumplimiento).to_f.round(2) %>" /></td>
+</tr>
+<% @cont += 1 %>

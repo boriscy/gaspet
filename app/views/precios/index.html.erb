@@ -1,0 +1,26 @@
+<h1>Listing precios</h1>
+
+<table class="grid">
+  <tr>
+    <th class="ui-widget-header">Fecha</th>
+    <th class="ui-widget-header">Henry hub</th>
+    <th class="ui-widget-header">Wti</th>
+    <th class="ui-widget-header" colspan="3">&nbsp;</th>
+  </tr>
+
+<% @precios.each do |precio| %>
+  <tr>
+    <td><%=h l precio.fecha, :format => "%d de %b de %Y" %></td>
+    <td class="num"><%=h precio.henry_hub %></td>
+    <td class="num"><%=h precio.wti %></td>
+    <td><%= link_to 'mostrar', precio %></td>
+    <td><%= link_to 'editar', edit_precio_path(precio) %></td>
+    <td><%= link_to 'borrar', precio, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= will_paginate @precios %>
+<br />
+
+<%= link_to 'New precio', new_precio_path %>

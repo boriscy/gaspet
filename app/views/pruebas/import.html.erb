@@ -1,0 +1,31 @@
+<h1>Contratos</h1>
+<table>
+  <tr>
+    <th>Contrato ID</th><th>Contrato</th><th>Operador</th><th>Operador ID</th>
+  </tr>
+
+  <% @contratos.each do |v| %>
+    <tr>
+      <td><%= v[:id] %></td>
+      <td><%= v[:codigo] %></td>
+      <td><%= v.empresa %></td>
+      <td><%= v.empresa.id %></td>
+    </tr>
+
+  <% end %>
+</table>
+
+<h1>Empresas</h1>
+<table>
+  <tr>
+    <th>Empresa ID</th><th>Empresa</th>
+  </tr>
+
+  <% @empresas.each do |v| %>
+    <tr>
+      <td><%= v[:id] %></td>
+      <td><%= v %></td>
+    </tr>
+
+  <% end %>
+</table>

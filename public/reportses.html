@@ -1,0 +1,2551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>GASPET - Sistema de información hidrocarburifera</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link href="/stylesheets/style.css?1242164440" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/../javascripts/jquery-ui/themes/smoothness/jquery-ui-1.7.1.custom.css?1237912742" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/formtastic.css?1237585993" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/formtastic_changes.css?1237585993" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/jquery-1.3.2.min.js?1236327096" type="text/javascript"></script>
+<script src="/javascripts/jquery-ui/jquery-ui-1.7.1.custom.min.js?1237912742" type="text/javascript"></script>
+<script src="/javascripts/jquery-ui/ui/i18n/ui.datepicker-es.js?1236691821" type="text/javascript"></script>
+<script src="/javascripts/superfish.js?1238420468" type="text/javascript"></script>
+    <script src="/javascripts/application.js?1239886175" type="text/javascript"></script>
+    <script>
+var AUTH_TOKEN = "8R53OYnS3iYCYB4Gmgq45qFUSLvWDCfqwhD0gHe5tBk=";
+  PAGE_SIZE = 30;
+  /**
+   * Funciones de Formato
+   */
+  /*Number.prototype.por = function () {
+  return this.toFixed(2)+'%';
+}
+   */
+  (function($){
+    $.ajaxSetup ({
+      type : "GET",
+      dataType : "html",
+      beforeSend : function (xhr) {
+        $('#cargando').show();
+      },
+      error : function(event){
+        $('#cargando').hide(1000);
+        $('#debug-error').html(event.responseText).dialog();
+      },
+      complete : function(event){
+        $('#cargando').hide(1000);
+      },
+      success : function(event){
+        $('#cargando').hide(1000);
+      }
+    });
+
+    $(document).ready(function() {
+      $('form').submit(function(){
+        $('#cargando').show();
+      });
+
+      /*
+       * Inicializacion del menu
+       **/
+      $("ul.sf-menu").superfish();
+
+      /**
+       * Permite que todos los campos con clase fecha puedan tener un date format
+       */
+      function setDates() {
+        $('input.fecha').datepicker({showOn: 'button', buttonImage: '/images/calendar.gif', buttonImageOnly: true, showButtonPanel: true});
+      }
+
+      $('#cont').css({width: $(window).width()*1 - (202 + 8) + 'px'});
+      $(window).resize(function(){
+        $('#cont').css({width: $(this).width()*1 - (202 + 8) + 'px'});
+      });
+
+      $('.resizable').resizable();
+
+      $('.fechaon').datepicker({
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true
+      });
+      /*
+    function setMenu() {
+      $('#menu ul ul').hide();
+      $('#menu li').each(function(i, elem) {
+        if($(elem).children('ul').length > 0) {
+          $(elem).click(function(){
+            //console.log($(this).children('ul'));
+            $(this).children('ul').toggle();
+          });
+        }
+      });
+    }
+    setMenu();
+       */
+
+      $("#debug-error").dialog({
+        bgiframe: true, height: 500, width: 800,
+        modal: true, resizable: false, autoOpen: false,
+        overlay: {
+          backgroundColor: '#000', opacity: 0.5
+        }
+      });
+      // Presenta un mensaje de error si falla el Ajax
+      jQuery('#debug-error').ajaxError( function(event, resp, settings){
+        $("#debug-error").dialog("open").html(resp.responseText);
+      });
+    });
+  })(jQuery);
+
+    </script>
+  </head>
+  <body>
+    <div class="ui-widget" id="error-msg" style="width:300px; position:absolute; display:none; margin: 0px; z-index:10000">
+      <div class="ui-state-error ui-corner-all" style="padding: 0.7em;">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+        <strong>Error:</strong> <div class="msg"></div></p>
+      </div>
+    </div>
+
+    <div id="debug-error" style="display:none; width: 640px; overflow: auto; z-index: 10000"></div>
+
+    <div class="ui-corner-all" id="cargando">
+      <div class="x-panel-header"><img alt="Preloader" src="/images/preloader.gif?1234467885" /> Cargando...</div>
+    </div>
+
+    <div id="encabezado" class="ui-state-default">
+      <ul class="sf-menu">
+        <li><a class="ui-state-default" href="#">Partes Diarios</a>
+          <ul>
+            <li><a class="ui-state-default" href="/partes_diarios/">Importar</a></li>
+            <li><a class="ui-state-default" href="/partes_diarios/reportes">Reportes</a></li>
+          </ul>
+        </li>
+        <li><a class="ui-state-default" href="/reportses">Reportes</a></li>
+      </ul>
+    </div>
+
+    <div id="cont">
+
+      
+
+      <h1>Informe General</h1>
+
+<div id="tabs" style="width:100% !important; overflow:auto">
+  <ul>
+    <li><a href="#produccion">Produccion</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#mercado">Comercialización</a></li>
+    <li><a href="#recepciones">Recepciones (Gasolina - Diesel Oil)</a></li>
+    <li><a href="#saldos">Saldos Plantas</a></li>
+  </ul>
+  
+  <!--Producción -->
+  <div id="produccion">
+    <div class="tab">
+      <ul>
+        <li><a href="#produccionDiaria">Producción Diaria</a></li>
+        <li><a href="#produccionGraficas">Gráficas</a></li>
+      </ul>
+      
+      <div id="produccionDiaria">
+        <h3 class="c_verde">Fuente: Dirección Fiscalización YPFB</h3>
+        
+        
+        <label>Fecha</label><input type="text" id="produccion-diaria" class="fecha" value="02-07-2009"/>
+        
+        <div id="produccionDiariaPartial">
+          <div style="float:left">
+  
+  <h1>Informe diario de Producción</h1>
+  <h1>Fecha: 02 de Julio de 2009</h1>
+
+    
+    <ul>
+      <li class="bold">mpc: Miles de pies cúbicos</li>
+      <li class="bold">MMmc: Millones de metros cúbicos</li>
+      <li class="bold">bbl: Barriles</li>
+    </ul>
+    <br/><br/>
+    
+    
+
+    
+    <h3>Total GAS y Líquidos</h3>
+    <table class="grid">
+      <tr><th class="ui-widget-header">Gas (mpc):</th><td class="num">1.437.230,90 </td></tr>
+      <tr><th class="ui-widget-header">Gas (MMmc):</th><td class="num">40,67 </td></tr>
+      <tr><th class="ui-widget-header">Líquidos (bbl):</th><td class="num">45.284,79 </td></tr>
+    </table>
+    <br/>
+    <h3>Total Componentes líquidos</h3>
+    <table class="grid">
+      <tr><th class="ui-widget-header">Petroléo (bbl):</th><td class="num">5.718,63 </td></tr>
+      <tr><th class="ui-widget-header">Condensado (bbl):</th><td class="num">31.882,38 </td></tr>
+      <tr><th class="ui-widget-header">Gasolina (bbl):</th><td class="num">7.683,78 </td></tr>
+    </table>
+    <br/>
+    <br/>
+</div>
+
+<div style="float:left">
+    <h2>Detalle por Campo</h2>
+    <table class="grid">
+      <tr>
+        <th class="ui-widget-header">Campo</th>
+        <th class="ui-widget-header">Gas (mpc)</th>
+        <th class="ui-widget-header">Líquidos (bbl)</th>
+      </tr>
+      
+      <tr>
+        <td>ARROYO NEGRO </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">0,00 </td>
+      </tr>
+      
+      <tr>
+        <td>BERMEJO PROFUNDO </td>
+        <td class="num">1.862,05 </td>
+        
+        <td class="num">33,30 </td>
+      </tr>
+      
+      <tr>
+        <td>BERMEJO SOMERO </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">61,60 </td>
+      </tr>
+      
+      <tr>
+        <td>BULO BULO </td>
+        <td class="num">42.568,00 </td>
+        
+        <td class="num">1.701,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CAMBEITI </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">27,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CAMIRI </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">164,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CARANDA </td>
+        <td class="num">20.747,00 </td>
+        
+        <td class="num">638,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CARRASCO </td>
+        <td class="num">2.294,00 </td>
+        
+        <td class="num">89,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CARRASCO FW </td>
+        <td class="num">8.906,00 </td>
+        
+        <td class="num">849,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CASCABEL </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">0,00 </td>
+      </tr>
+      
+      <tr>
+        <td>CHACO SUR </td>
+        <td class="num">2.400,00 </td>
+        
+        <td class="num">38,00 </td>
+      </tr>
+      
+      <tr>
+        <td>COLPA </td>
+        <td class="num">12.720,00 </td>
+        
+        <td class="num">340,00 </td>
+      </tr>
+      
+      <tr>
+        <td>EL DORADO </td>
+        <td class="num">11.449,00 </td>
+        
+        <td class="num">326,00 </td>
+      </tr>
+      
+      <tr>
+        <td>ESCONDIDO </td>
+        <td class="num">40.465,49 </td>
+        
+        <td class="num">814,07 </td>
+      </tr>
+      
+      <tr>
+        <td>GUAIRUY </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">71,00 </td>
+      </tr>
+      
+      <tr>
+        <td>HUMBERTO SUÁREZ ROCA </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">251,00 </td>
+      </tr>
+      
+      <tr>
+        <td>JUNIN </td>
+        <td class="num">1.220,00 </td>
+        
+        <td class="num">2,00 </td>
+      </tr>
+      
+      <tr>
+        <td>KANATA </td>
+        <td class="num">5.967,00 </td>
+        
+        <td class="num">160,00 </td>
+      </tr>
+      
+      <tr>
+        <td>KANATA NORTE </td>
+        <td class="num">8.163,00 </td>
+        
+        <td class="num">339,00 </td>
+      </tr>
+      
+      <tr>
+        <td>LA PEÑA </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">274,11 </td>
+      </tr>
+      
+      <tr>
+        <td>LA VERTIENTE </td>
+        <td class="num">13.627,59 </td>
+        
+        <td class="num">278,83 </td>
+      </tr>
+      
+      <tr>
+        <td>LOS CUSIS </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">243,00 </td>
+      </tr>
+      
+      <tr>
+        <td>LOS PENOCOS </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">59,00 </td>
+      </tr>
+      
+      <tr>
+        <td>LOS SAUCES </td>
+        <td class="num">522,73 </td>
+        
+        <td class="num">6,00 </td>
+      </tr>
+      
+      <tr>
+        <td>LOS SURIS </td>
+        <td class="num">1.103,94 </td>
+        
+        <td class="num">34,68 </td>
+      </tr>
+      
+      <tr>
+        <td>MARGARITA </td>
+        <td class="num">64.171,00 </td>
+        
+        <td class="num">3.753,00 </td>
+      </tr>
+      
+      <tr>
+        <td>MONTEAGUDO </td>
+        <td class="num">437,00 </td>
+        
+        <td class="num">168,00 </td>
+      </tr>
+      
+      <tr>
+        <td>MONTECRISTO </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">18,00 </td>
+      </tr>
+      
+      <tr>
+        <td>NARANJILLOS </td>
+        <td class="num">15.735,00 </td>
+        
+        <td class="num">154,00 </td>
+      </tr>
+      
+      <tr>
+        <td>ÑUPUCO </td>
+        <td class="num">10.204,00 </td>
+        
+        <td class="num">127,00 </td>
+      </tr>
+      
+      <tr>
+        <td>PALOMA </td>
+        <td class="num">30.285,69 </td>
+        
+        <td class="num">985,54 </td>
+      </tr>
+      
+      <tr>
+        <td>PATUJUSAL </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">422,00 </td>
+      </tr>
+      
+      <tr>
+        <td>PATUJUSAL OESTE </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">7,00 </td>
+      </tr>
+      
+      <tr>
+        <td>PERCHELES </td>
+        <td class="num">153,00 </td>
+        
+        <td class="num">9,00 </td>
+      </tr>
+      
+      <tr>
+        <td>PORVENIR </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">0,00 </td>
+      </tr>
+      
+      <tr>
+        <td>RIO GRANDE </td>
+        <td class="num">26.350,00 </td>
+        
+        <td class="num">636,30 </td>
+      </tr>
+      
+      <tr>
+        <td>SÁBALO </td>
+        <td class="num">473.136,99 </td>
+        
+        <td class="num">15.504,52 </td>
+      </tr>
+      
+      <tr>
+        <td>SAN ALBERTO </td>
+        <td class="num">393.472,27 </td>
+        
+        <td class="num">9.747,66 </td>
+      </tr>
+      
+      <tr>
+        <td>SAN ROQUE </td>
+        <td class="num">7.436,00 </td>
+        
+        <td class="num">131,00 </td>
+      </tr>
+      
+      <tr>
+        <td>SANTA ROSA </td>
+        <td class="num">12.265,00 </td>
+        
+        <td class="num">17,00 </td>
+      </tr>
+      
+      <tr>
+        <td>SANTA ROSA W </td>
+        <td class="num">2.111,00 </td>
+        
+        <td class="num">1,00 </td>
+      </tr>
+      
+      <tr>
+        <td>SIRARI </td>
+        <td class="num">14.752,00 </td>
+        
+        <td class="num">284,00 </td>
+      </tr>
+      
+      <tr>
+        <td>SURUBI </td>
+        <td class="num">614,73 </td>
+        
+        <td class="num">1.368,65 </td>
+      </tr>
+      
+      <tr>
+        <td>SURUBI BLOQUE BAJO </td>
+        <td class="num">1.154,27 </td>
+        
+        <td class="num">781,93 </td>
+      </tr>
+      
+      <tr>
+        <td>SURUBI NOROESTE </td>
+        <td class="num">429,31 </td>
+        
+        <td class="num">1.855,36 </td>
+      </tr>
+      
+      <tr>
+        <td>TACOBO </td>
+        <td class="num">62.191,93 </td>
+        
+        <td class="num">198,10 </td>
+      </tr>
+      
+      <tr>
+        <td>TAIGUATI </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">0,00 </td>
+      </tr>
+      
+      <tr>
+        <td>TAJIBO </td>
+        <td class="num">7.868,91 </td>
+        
+        <td class="num">80,70 </td>
+      </tr>
+      
+      <tr>
+        <td>TATARENDA </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">69,04 </td>
+      </tr>
+      
+      <tr>
+        <td>TORO </td>
+        <td class="num">0,00 </td>
+        
+        <td class="num">104,40 </td>
+      </tr>
+      
+      <tr>
+        <td>VIBORA </td>
+        <td class="num">18.092,00 </td>
+        
+        <td class="num">395,00 </td>
+      </tr>
+      
+      <tr>
+        <td>VUELTA GRANDE </td>
+        <td class="num">78.851,00 </td>
+        
+        <td class="num">1.170,00 </td>
+      </tr>
+      
+      <tr>
+        <td>YAPACANI </td>
+        <td class="num">43.504,00 </td>
+        
+        <td class="num">497,00 </td>
+      </tr>
+      
+    </table>
+  </div>
+
+        </div>
+        <div style="clear:both"></div>
+      </div>
+      
+      <div id="produccionGraficas">
+        
+        
+
+<div id="produccionGraficasPartial">
+  <h1>Producción GAS en mpc</h1>
+
+  
+  
+  
+
+  <ul class="listado">
+    
+      
+    <li><a href="#" class="01-05-2009" >Mayo - 2009</a></li>
+    
+      
+    <li><a href="#" class="01-06-2009" >Junio - 2009</a></li>
+    
+      
+    <li><a href="#" class="01-07-2009" >Julio - 2009</a></li>
+    
+  </ul>
+  <div>
+    <div style="float:left">
+      <img src="/informes/2009/07/gas-total-hasta-02-06-2009.png" alt="Producción gas" /><br/><br/>
+    </div>
+    <div  style="float:left">
+      <table class="grid">
+        <tr>
+          <th class="ui-widget-header">Fecha</th>
+          <th class="ui-widget-header">Prod. en mpc</th>
+        </tr>
+      
+      
+        <tr>
+          <td>02 de Jun 2009</td>
+          <td class="num">1.367.419,76 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>03 de Jun 2009</td>
+          <td class="num">1.358.997,35 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>04 de Jun 2009</td>
+          <td class="num">1.402.173,98 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>05 de Jun 2009</td>
+          <td class="num">1.401.804,74 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>06 de Jun 2009</td>
+          <td class="num">1.400.561,02 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>07 de Jun 2009</td>
+          <td class="num">1.325.205,40 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>08 de Jun 2009</td>
+          <td class="num">1.401.250,17 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>09 de Jun 2009</td>
+          <td class="num">1.408.834,95 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>10 de Jun 2009</td>
+          <td class="num">1.408.367,68 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>11 de Jun 2009</td>
+          <td class="num">1.429.741,57 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>12 de Jun 2009</td>
+          <td class="num">1.428.661,36 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>13 de Jun 2009</td>
+          <td class="num">1.418.695,86 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>14 de Jun 2009</td>
+          <td class="num">1.408.039,52 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>15 de Jun 2009</td>
+          <td class="num">1.369.671,22 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>16 de Jun 2009</td>
+          <td class="num">1.300.482,86 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>17 de Jun 2009</td>
+          <td class="num">1.420.647,14 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>18 de Jun 2009</td>
+          <td class="num">1.422.213,99 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>19 de Jun 2009</td>
+          <td class="num">1.432.368,35 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>20 de Jun 2009</td>
+          <td class="num">1.423.174,65 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>21 de Jun 2009</td>
+          <td class="num">1.289.027,91 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>22 de Jun 2009</td>
+          <td class="num">1.422.083,59 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>23 de Jun 2009</td>
+          <td class="num">1.431.409,81 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>24 de Jun 2009</td>
+          <td class="num">1.433.502,77 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>25 de Jun 2009</td>
+          <td class="num">1.432.180,80 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>26 de Jun 2009</td>
+          <td class="num">1.443.626,70 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>27 de Jun 2009</td>
+          <td class="num">1.445.039,96 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>28 de Jun 2009</td>
+          <td class="num">1.447.457,05 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>29 de Jun 2009</td>
+          <td class="num">1.434.797,93 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>30 de Jun 2009</td>
+          <td class="num">1.442.337,36 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>01 de Jul 2009</td>
+          <td class="num">1.439.776,09 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>02 de Jul 2009</td>
+          <td class="num">1.437.230,90 </td>
+          
+        </tr>
+      
+      <tr class="bold"><td>Total</td><td class="num">43.626.782,44 </td></tr>
+      </table>
+    </div>
+  </div>
+  <div style="clear:both"></div>
+  <br/>
+  <h1>Producción Líquidos en BBL</h1>
+  <div>
+    <div style="float:left">
+      <img src="/informes/2009/07/liquidos-total-hasta-02-06-2009.png" alt="Producción gas" />
+    </div>
+
+
+    <div  style="float:left">
+      <table class="grid">
+        <tr>
+          <th class="ui-widget-header">Fecha</th>
+          <th class="ui-widget-header">Suma<br/>Líquidos</th>
+          <th class="ui-widget-header">Condensado</th>
+          <th class="ui-widget-header">Gasolina</th>
+          <th class="ui-widget-header">Petroleo</th>
+        </tr>
+      
+      
+        <tr>
+          <td>02 de Jun 2009</td>
+          <td class="num">44.968,52 </td>
+          <td class="num">31.970,95 </td>
+          <td class="num">7.120,65 </td>
+          <td class="num">5.876,92 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>03 de Jun 2009</td>
+          <td class="num">45.172,11 </td>
+          <td class="num">32.008,77 </td>
+          <td class="num">7.294,68 </td>
+          <td class="num">5.868,66 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>04 de Jun 2009</td>
+          <td class="num">45.233,73 </td>
+          <td class="num">31.995,79 </td>
+          <td class="num">7.377,15 </td>
+          <td class="num">5.860,79 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>05 de Jun 2009</td>
+          <td class="num">45.050,61 </td>
+          <td class="num">31.776,64 </td>
+          <td class="num">7.459,18 </td>
+          <td class="num">5.814,79 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>06 de Jun 2009</td>
+          <td class="num">45.274,05 </td>
+          <td class="num">32.067,92 </td>
+          <td class="num">7.428,47 </td>
+          <td class="num">5.777,66 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>07 de Jun 2009</td>
+          <td class="num">43.900,54 </td>
+          <td class="num">30.770,18 </td>
+          <td class="num">7.325,07 </td>
+          <td class="num">5.805,29 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>08 de Jun 2009</td>
+          <td class="num">45.098,30 </td>
+          <td class="num">31.788,09 </td>
+          <td class="num">7.536,13 </td>
+          <td class="num">5.774,08 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>09 de Jun 2009</td>
+          <td class="num">45.206,89 </td>
+          <td class="num">31.882,94 </td>
+          <td class="num">7.545,38 </td>
+          <td class="num">5.778,57 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>10 de Jun 2009</td>
+          <td class="num">45.379,65 </td>
+          <td class="num">32.297,10 </td>
+          <td class="num">7.395,55 </td>
+          <td class="num">5.687,00 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>11 de Jun 2009</td>
+          <td class="num">45.406,39 </td>
+          <td class="num">32.205,95 </td>
+          <td class="num">7.441,36 </td>
+          <td class="num">5.759,08 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>12 de Jun 2009</td>
+          <td class="num">45.755,23 </td>
+          <td class="num">32.698,01 </td>
+          <td class="num">7.268,02 </td>
+          <td class="num">5.789,20 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>13 de Jun 2009</td>
+          <td class="num">45.249,18 </td>
+          <td class="num">31.980,44 </td>
+          <td class="num">7.397,16 </td>
+          <td class="num">5.871,58 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>14 de Jun 2009</td>
+          <td class="num">44.925,30 </td>
+          <td class="num">31.823,71 </td>
+          <td class="num">7.286,75 </td>
+          <td class="num">5.814,84 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>15 de Jun 2009</td>
+          <td class="num">44.964,72 </td>
+          <td class="num">31.658,18 </td>
+          <td class="num">7.485,21 </td>
+          <td class="num">5.821,33 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>16 de Jun 2009</td>
+          <td class="num">44.609,82 </td>
+          <td class="num">31.702,54 </td>
+          <td class="num">7.176,51 </td>
+          <td class="num">5.730,77 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>17 de Jun 2009</td>
+          <td class="num">44.470,88 </td>
+          <td class="num">31.921,73 </td>
+          <td class="num">6.778,16 </td>
+          <td class="num">5.770,99 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>18 de Jun 2009</td>
+          <td class="num">45.038,53 </td>
+          <td class="num">31.925,12 </td>
+          <td class="num">7.328,85 </td>
+          <td class="num">5.784,56 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>19 de Jun 2009</td>
+          <td class="num">45.786,46 </td>
+          <td class="num">32.300,53 </td>
+          <td class="num">7.688,98 </td>
+          <td class="num">5.796,95 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>20 de Jun 2009</td>
+          <td class="num">45.529,96 </td>
+          <td class="num">32.132,68 </td>
+          <td class="num">7.628,40 </td>
+          <td class="num">5.768,88 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>21 de Jun 2009</td>
+          <td class="num">42.143,09 </td>
+          <td class="num">29.229,74 </td>
+          <td class="num">7.100,01 </td>
+          <td class="num">5.813,34 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>22 de Jun 2009</td>
+          <td class="num">45.261,63 </td>
+          <td class="num">32.074,90 </td>
+          <td class="num">7.431,36 </td>
+          <td class="num">5.755,37 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>23 de Jun 2009</td>
+          <td class="num">45.249,47 </td>
+          <td class="num">32.177,11 </td>
+          <td class="num">7.298,27 </td>
+          <td class="num">5.774,09 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>24 de Jun 2009</td>
+          <td class="num">45.406,81 </td>
+          <td class="num">32.265,42 </td>
+          <td class="num">7.272,73 </td>
+          <td class="num">5.868,66 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>25 de Jun 2009</td>
+          <td class="num">45.318,05 </td>
+          <td class="num">32.388,34 </td>
+          <td class="num">7.108,43 </td>
+          <td class="num">5.821,28 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>26 de Jun 2009</td>
+          <td class="num">44.979,04 </td>
+          <td class="num">31.980,99 </td>
+          <td class="num">7.188,22 </td>
+          <td class="num">5.809,83 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>27 de Jun 2009</td>
+          <td class="num">45.347,53 </td>
+          <td class="num">32.134,93 </td>
+          <td class="num">7.367,94 </td>
+          <td class="num">5.844,66 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>28 de Jun 2009</td>
+          <td class="num">44.873,97 </td>
+          <td class="num">31.982,87 </td>
+          <td class="num">7.080,76 </td>
+          <td class="num">5.810,34 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>29 de Jun 2009</td>
+          <td class="num">45.067,14 </td>
+          <td class="num">31.841,41 </td>
+          <td class="num">7.417,92 </td>
+          <td class="num">5.807,81 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>30 de Jun 2009</td>
+          <td class="num">46.371,96 </td>
+          <td class="num">33.017,61 </td>
+          <td class="num">7.537,15 </td>
+          <td class="num">5.817,20 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>01 de Jul 2009</td>
+          <td class="num">45.303,40 </td>
+          <td class="num">32.088,90 </td>
+          <td class="num">7.513,74 </td>
+          <td class="num">5.700,76 </td>
+          
+        </tr>
+      
+        <tr>
+          <td>02 de Jul 2009</td>
+          <td class="num">45.284,79 </td>
+          <td class="num">31.882,38 </td>
+          <td class="num">7.683,78 </td>
+          <td class="num">5.718,63 </td>
+          
+        </tr>
+      
+      <tr class="bold">
+        <td>Total</td>
+        <td class="num">1.397.627,75 </td>
+        <td class="num">989.971,87 </td>
+        <td class="num">227.961,97 </td>
+        <td class="num">179.693,91 </td>
+      </tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="clear:both"></div>
+
+</div>
+<script>
+  (function($){
+    $(document).ready(function() {
+      $('#produccionGraficasPartial ul.listado li a').click(function() {
+        var fecha = this.className;
+        var ini = new Date().inicioDeMes(fecha).toDB();
+        var fin = new Date().finDeMes(fecha).toDB();
+        $('#produccionGraficasPartial').load("/reportses/produccion_graficas/?fecha_ini=" + ini + "&fecha_fin=" + fin );
+      });
+    });
+  })(jQuery)
+</script>
+      </div>
+    </div>
+  </div>
+  
+  <!--Grafica de Precios-->
+    
+  <div id="precios">
+    
+    
+    
+    <div>
+      <ul class="listado">
+        
+          
+          <li><a href="#" class="06-05-2009">Mayo de 2009</a></li>
+        
+          
+          <li><a href="#" class="06-06-2009">Junio de 2009</a></li>
+        
+          
+          <li><a href="#" class="06-07-2009">Julio de 2009</a></li>
+        
+      </ul>
+    </div>
+    
+    <div class="tab">
+      <ul>
+        <li><a href="#preciosNacionales">Precios Nacionales</a></li>
+        <li><a href="#preciosGas">GAS Internacional</a></li>
+        <li><a href="#preciosPetroleo">Petroleo Internacional</a></li>
+      </ul>
+
+      <div id="preciosNacionales">
+        <h3 class="c_verde">Fuente: Ministerio de Hidrocarburos</h3>
+        <h1>Precios de Exportación Gas (preliminares)</h1>
+
+        <table class="grid" class="fl">
+          <tr>
+            <tr><th class="ui-widget-header">QDCA (Brasil)</th><td class="num">4,29</td></tr>
+            <tr><th class="ui-widget-header">QDCB (Brasil)</th><td class="num">5,15</td></tr>
+            <tr><th class="ui-widget-header">Enarsa (Argentina)</th><td class="num">4,58</td></tr>
+          </tr>
+        </table>
+        <br/><br/>
+
+
+        <h1>Precios mercado interno (Bolivia) en bolivianos por litro</h1>
+        <table class="grid" class="fl">
+          <tr><th class="ui-widget-header">Gasolina Especial</th><td class="num">3,74</td></tr>
+          <tr><th class="ui-widget-header">Gasolina Premium</th><td class="num">4,79</td></tr>
+          <tr><th class="ui-widget-header">Gasolina Aviación</th><td class="num">4,57</td></tr>
+          <tr><th class="ui-widget-header">Kerosene</th><td class="num">2,72</td></tr>
+          <tr><th class="ui-widget-header">Jet Fuel Nacional</th><td class="num">2,77</td></tr>
+          <tr><th class="ui-widget-header">Jet Fuel Internacional</th><td class="num">5,86</td></tr>
+          <tr><th class="ui-widget-header">Diesel Oil Nacional</th><td class="num">3,72</td></tr>
+          <tr><th class="ui-widget-header">Agro Fuel</th><td class="num">2,55</td></tr>
+          <tr><th class="ui-widget-header">Gas Oil</th><td class="num">1,10</td></tr>
+          <tr><th class="ui-widget-header">Fuel Oil</th><td class="num">2,78</td></tr>
+          <tr><th class="ui-widget-header">Gas Licuado de Refineria</th><td class="num">2,25</td></tr>
+        </table>
+        <br/><br/>
+        <h4>Precios al Brasil del 2008 al 2009</h4>
+        <img src="/graficas/precios_brasil.gif" />
+        <h4>Precios a la Argentina del 2008 al 2009</h4>
+        <img src="/graficas/precios_argentina.gif" />
+
+      </div>
+
+      <div id="preciosGas">
+        <h3 class="c_verde">Fuente: bloomberg.com</h3>
+
+
+  <div style="width:560px;float:left">
+    <img src="/informes/2009/07/precios-henry-hub-06-07-2009.png" alt="Producción gas" />
+  </div>
+  <div style="float:left">
+    
+    
+    <h2>Precios internacionales GAS</h2>
+    <table class="grid">
+      <tr>
+        <th class="ui-widget-header">Fecha</th>
+        <th class="ui-widget-header">Precio en $us</th>
+      </tr>
+      
+        <tr>
+          <td>29 de May 2009</td>
+          <td class="num">3,55 </td>
+        </tr>
+      
+        <tr>
+          <td>01 de Jun 2009</td>
+          <td class="num">3,92 </td>
+        </tr>
+      
+        <tr>
+          <td>02 de Jun 2009</td>
+          <td class="num">3,87 </td>
+        </tr>
+      
+        <tr>
+          <td>03 de Jun 2009</td>
+          <td class="num">4,04 </td>
+        </tr>
+      
+        <tr>
+          <td>04 de Jun 2009</td>
+          <td class="num">3,83 </td>
+        </tr>
+      
+        <tr>
+          <td>05 de Jun 2009</td>
+          <td class="num">3,58 </td>
+        </tr>
+      
+        <tr>
+          <td>06 de Jun 2009</td>
+          <td class="num">3,52 </td>
+        </tr>
+      
+        <tr>
+          <td>07 de Jun 2009</td>
+          <td class="num">3,58 </td>
+        </tr>
+      
+        <tr>
+          <td>08 de Jun 2009</td>
+          <td class="num">3,52 </td>
+        </tr>
+      
+        <tr>
+          <td>09 de Jun 2009</td>
+          <td class="num">3,53 </td>
+        </tr>
+      
+        <tr>
+          <td>10 de Jun 2009</td>
+          <td class="num">3,82 </td>
+        </tr>
+      
+        <tr>
+          <td>11 de Jun 2009</td>
+          <td class="num">3,56 </td>
+        </tr>
+      
+        <tr>
+          <td>12 de Jun 2009</td>
+          <td class="num">3,51 </td>
+        </tr>
+      
+        <tr>
+          <td>14 de Jun 2009</td>
+          <td class="num">3,51 </td>
+        </tr>
+      
+        <tr>
+          <td>15 de Jun 2009</td>
+          <td class="num">3,57 </td>
+        </tr>
+      
+        <tr>
+          <td>16 de Jun 2009</td>
+          <td class="num">3,79 </td>
+        </tr>
+      
+        <tr>
+          <td>17 de Jun 2009</td>
+          <td class="num">4,17 </td>
+        </tr>
+      
+        <tr>
+          <td>18 de Jun 2009</td>
+          <td class="num">4,01 </td>
+        </tr>
+      
+        <tr>
+          <td>19 de Jun 2009</td>
+          <td class="num">4,18 </td>
+        </tr>
+      
+        <tr>
+          <td>22 de Jun 2009</td>
+          <td class="num">4,05 </td>
+        </tr>
+      
+        <tr>
+          <td>23 de Jun 2009</td>
+          <td class="num">4,01 </td>
+        </tr>
+      
+        <tr>
+          <td>24 de Jun 2009</td>
+          <td class="num">3,91 </td>
+        </tr>
+      
+        <tr>
+          <td>25 de Jun 2009</td>
+          <td class="num">3,79 </td>
+        </tr>
+      
+        <tr>
+          <td>26 de Jun 2009</td>
+          <td class="num">3,81 </td>
+        </tr>
+      
+        <tr>
+          <td>27 de Jun 2009</td>
+          <td class="num">3,81 </td>
+        </tr>
+      
+        <tr>
+          <td>29 de Jun 2009</td>
+          <td class="num">3,81 </td>
+        </tr>
+      
+        <tr>
+          <td>30 de Jun 2009</td>
+          <td class="num">3,82 </td>
+        </tr>
+      
+        <tr>
+          <td>01 de Jul 2009</td>
+          <td class="num">3,70 </td>
+        </tr>
+      
+        <tr>
+          <td>02 de Jul 2009</td>
+          <td class="num">3,63 </td>
+        </tr>
+      
+        <tr>
+          <td>06 de Jul 2009</td>
+          <td class="num">3,24 </td>
+        </tr>
+      
+    </table>
+  </div>
+  <div style="clear:both"></div>
+      </div>
+      <div id="preciosPetroleo">
+        <h3 class="c_verde">Fuente: bloomberg.com</h3>
+
+
+  <div style="width:560px;float:left">
+    <img src="/informes/2009/07/precios-wti-06-07-2009.png" alt="Producción gas" />
+  </div>
+  <div style="float:left">
+    
+    
+    <h2>Precios internacionales Petroleo</h2>
+    <table class="grid">
+      <tr>
+        <th class="ui-widget-header">Fecha</th>
+        <th class="ui-widget-header">Precio en $us</th>
+      </tr>
+      
+        <tr>
+          <td>29 de May 2009</td>
+          <td class="num">66,03 </td>
+        </tr>
+      
+        <tr>
+          <td>01 de Jun 2009</td>
+          <td class="num">68,58 </td>
+        </tr>
+      
+        <tr>
+          <td>02 de Jun 2009</td>
+          <td class="num">68,10 </td>
+        </tr>
+      
+        <tr>
+          <td>03 de Jun 2009</td>
+          <td class="num">66,12 </td>
+        </tr>
+      
+        <tr>
+          <td>04 de Jun 2009</td>
+          <td class="num">68,02 </td>
+        </tr>
+      
+        <tr>
+          <td>05 de Jun 2009</td>
+          <td class="num">69,26 </td>
+        </tr>
+      
+        <tr>
+          <td>06 de Jun 2009</td>
+          <td class="num">68,44 </td>
+        </tr>
+      
+        <tr>
+          <td>07 de Jun 2009</td>
+          <td class="num">68,44 </td>
+        </tr>
+      
+        <tr>
+          <td>08 de Jun 2009</td>
+          <td class="num">68,09 </td>
+        </tr>
+      
+        <tr>
+          <td>09 de Jun 2009</td>
+          <td class="num">68,09 </td>
+        </tr>
+      
+        <tr>
+          <td>10 de Jun 2009</td>
+          <td class="num">71,33 </td>
+        </tr>
+      
+        <tr>
+          <td>11 de Jun 2009</td>
+          <td class="num">72,73 </td>
+        </tr>
+      
+        <tr>
+          <td>12 de Jun 2009</td>
+          <td class="num">71,27 </td>
+        </tr>
+      
+        <tr>
+          <td>14 de Jun 2009</td>
+          <td class="num">72,04 </td>
+        </tr>
+      
+        <tr>
+          <td>15 de Jun 2009</td>
+          <td class="num">71,67 </td>
+        </tr>
+      
+        <tr>
+          <td>16 de Jun 2009</td>
+          <td class="num">71,70 </td>
+        </tr>
+      
+        <tr>
+          <td>17 de Jun 2009</td>
+          <td class="num">69,92 </td>
+        </tr>
+      
+        <tr>
+          <td>18 de Jun 2009</td>
+          <td class="num">71,37 </td>
+        </tr>
+      
+        <tr>
+          <td>19 de Jun 2009</td>
+          <td class="num">72,03 </td>
+        </tr>
+      
+        <tr>
+          <td>22 de Jun 2009</td>
+          <td class="num">66,88 </td>
+        </tr>
+      
+        <tr>
+          <td>23 de Jun 2009</td>
+          <td class="num">68,74 </td>
+        </tr>
+      
+        <tr>
+          <td>24 de Jun 2009</td>
+          <td class="num">68,74 </td>
+        </tr>
+      
+        <tr>
+          <td>25 de Jun 2009</td>
+          <td class="num">69,94 </td>
+        </tr>
+      
+        <tr>
+          <td>26 de Jun 2009</td>
+          <td class="num">69,16 </td>
+        </tr>
+      
+        <tr>
+          <td>27 de Jun 2009</td>
+          <td class="num">69,16 </td>
+        </tr>
+      
+        <tr>
+          <td>29 de Jun 2009</td>
+          <td class="num">69,16 </td>
+        </tr>
+      
+        <tr>
+          <td>30 de Jun 2009</td>
+          <td class="num">71,08 </td>
+        </tr>
+      
+        <tr>
+          <td>01 de Jul 2009</td>
+          <td class="num">69,31 </td>
+        </tr>
+      
+        <tr>
+          <td>02 de Jul 2009</td>
+          <td class="num">66,99 </td>
+        </tr>
+      
+        <tr>
+          <td>06 de Jul 2009</td>
+          <td class="num">64,05 </td>
+        </tr>
+      
+    </table>
+  </div>
+  <div style="clear:both"></div>
+      </div>
+    </div>
+  </div>
+  <!--Fin-->
+
+  <div id="mercado">
+    <h3 class="c_verde">Fuente: Viceministerio de Exploración y Explotación</h3>
+    <h2>Comercialización</h2>
+    <h1>Acumulado Volumenes y precios GAS Febrero 2009 (Informe Mensual)</h1>
+
+
+<h2>Argentina (Enarsa)</h2>
+<table class="grid">
+   <tbody><tr><th style="" class="ui-widget-header">
+      Precio ENARSA (60°F)
+    (EN $US/MMBTU)</th>
+    <td class="num">7,8399</td>
+
+  </tr>
+  <tr>
+  <th class="ui-widget-header">
+      Volumen (60º F MPC)
+  </th>
+  <td class="num">6.237.215,57</td>
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">
+
+      Energía
+      ENARSA (60°F)
+    (EN MMBTU)
+  </th>
+  <td class="num">6.816.225,90</td>
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">
+      Valor en $us (Precio x Energia)
+  </th>
+  <td class="num bold">53.438.529,43</td>
+
+  </tr>
+</tbody></table>
+<br><br>
+<h2>Brasil GSA</h2>
+<table class="grid">
+  <tbody><tr>
+  <th style="" class="ui-widget-header">Precio
+      (68°F EN $US/MMBTU)
+  </th>
+  <td class="num">5,6477</td>
+  </tr>
+
+  <tr>
+  <th style="" class="ui-widget-header">Volumen
+      (68°F MPC)
+  </th>
+  <td class="num">19.988.063,67</td>
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">Energía
+      (68°F EN MMBTU)
+  </th>
+  <td class="num">20.888.563,80</td>
+
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">
+      Valor en $us (Precio x Energia)
+  </th>
+  <td class="num bold">117.973.115,25</td>
+  </tr>
+</tbody></table>
+<br><br>
+<h2>Mercado Interno (Bolivia)</h2>
+
+<table class="grid">
+  <tbody><tr>
+  <th style="" class="ui-widget-header">Precio
+      (60° F EN $US/MMBTU)
+  </th>
+  <td class="num">1,1587</td>
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">Volumen
+      (60° F MPC)
+  </th>
+  <td class="num">6.172.053,51</td>
+
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">Energía
+      (60° F EN MMBTU)
+  </th>
+  <td class="num">5.918.352,76</td>
+  </tr>
+  <tr>
+  <th style="" class="ui-widget-header">
+      Valor en $us (Precio x Energia)
+  </th>
+
+  <td class="num bold">6.853.949,98</td>
+  </tr>
+</tbody></table>
+<br/><br>
+
+  </div>
+
+  <div id="recepciones">
+    <h3 class="c_verde">Fuente: YPFB Dirección de Comercialización de Líquidos</h3>
+    
+    <ul>
+      
+        <li>
+          
+          <a href="#" class="01-01-2009">Enero de 2009</a>
+        </li>
+      
+        <li>
+          
+          <a href="#" class="01-02-2009">Febrero de 2009</a>
+        </li>
+      
+        <li>
+          
+          <a href="#" class="01-03-2009">Marzo de 2009</a>
+        </li>
+      
+    </ul>
+    <div class="in">
+      
+
+<h1>Recepciones Marzo de 2009</h1>
+
+<table class="grid">
+  <tr>
+    <th>&nbsp;</th>
+    
+    
+    
+      <th class="ui-widget-header" colspan="3">Gasolina Especial (en litros)</th>
+      
+    
+      <th class="ui-widget-header" colspan="3">Diesel Oil (en litros)</th>
+      
+    
+  </tr>
+  <tr>
+    <th class="ui-widget-header">Zona Comercial</th>
+    
+      <th class="ui-widget-header">Programado</th>
+      <th class="ui-widget-header">Comercializado</th>
+      <th class="ui-widget-header">%<br/>Cumplimiento</th>
+    
+      <th class="ui-widget-header">Programado</th>
+      <th class="ui-widget-header">Comercializado</th>
+      <th class="ui-widget-header">%<br/>Cumplimiento</th>
+    
+  </tr>
+  
+  
+
+  
+    <tr>
+      <td>
+        La Paz
+      </td>
+      
+        
+        
+        <td class="num">23.800.000,00 </td>
+        <td class="num">22.914.843,00 </td>
+        <td class="num">96,28 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">18.500.000,00 </td>
+        <td class="num">15.039.945,00 </td>
+        <td class="num">81,30 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Oruro
+      </td>
+      
+        
+        
+        <td class="num">3.950.000,00 </td>
+        <td class="num">3.666.724,80 </td>
+        <td class="num">92,83 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">7.000.000,00 </td>
+        <td class="num">5.983.511,10 </td>
+        <td class="num">85,48 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Cochabamba
+      </td>
+      
+        
+        
+        <td class="num">10.500.000,00 </td>
+        <td class="num">10.036.000,00 </td>
+        <td class="num">95,58 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">15.200.000,00 </td>
+        <td class="num">14.350.323,00 </td>
+        <td class="num">94,41 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Trinidad
+      </td>
+      
+        
+        
+        <td class="num">1.500.000,00 </td>
+        <td class="num">1.402.409,00 </td>
+        <td class="num">93,49 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">1.500.000,00 </td>
+        <td class="num">1.065.371,00 </td>
+        <td class="num">71,02 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Puerto Villarroel
+      </td>
+      
+        
+        
+        <td class="num">1.500.000,00 </td>
+        <td class="num">1.572.000,00 </td>
+        <td class="num">104,80 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">1.000.000,00 </td>
+        <td class="num">1.089.000,00 </td>
+        <td class="num">108,90 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Guayaramerin
+      </td>
+      
+        
+        
+        <td class="num">300.000,00 </td>
+        <td class="num">459.355,00 </td>
+        <td class="num">153,12 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">300.000,00 </td>
+        <td class="num">375.910,00 </td>
+        <td class="num">125,30 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Riberalta
+      </td>
+      
+        
+        
+        <td class="num">900.000,00 </td>
+        <td class="num">773.617,00 </td>
+        <td class="num">85,96 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">700.000,00 </td>
+        <td class="num">823.677,00 </td>
+        <td class="num">117,67 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Cobija
+      </td>
+      
+        
+        
+        <td class="num">600.000,00 </td>
+        <td class="num">660.050,00 </td>
+        <td class="num">110,01 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">650.000,00 </td>
+        <td class="num">582.931,00 </td>
+        <td class="num">89,68 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Tarija
+      </td>
+      
+        
+        
+        <td class="num">1.800.000,00 </td>
+        <td class="num">1.751.500,00 </td>
+        <td class="num">97,31 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">3.120.000,00 </td>
+        <td class="num">3.034.000,00 </td>
+        <td class="num">97,24 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Bermejo
+      </td>
+      
+        
+        
+        <td class="num">260.000,00 </td>
+        <td class="num">203.800,00 </td>
+        <td class="num">78,38 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">300.000,00 </td>
+        <td class="num">228.000,00 </td>
+        <td class="num">76,00 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Villazón
+      </td>
+      
+        
+        
+        <td class="num">200.000,00 </td>
+        <td class="num">170.000,00 </td>
+        <td class="num">85,00 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">450.000,00 </td>
+        <td class="num">420.000,00 </td>
+        <td class="num">93,33 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Yacuiba
+      </td>
+      
+        
+        
+        <td class="num">800.000,00 </td>
+        <td class="num">703.800,00 </td>
+        <td class="num">87,98 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">3.850.000,00 </td>
+        <td class="num">1.680.400,00 </td>
+        <td class="num">43,65 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Villamontes
+      </td>
+      
+        
+        
+        <td class="num">550.000,00 </td>
+        <td class="num">407.600,00 </td>
+        <td class="num">74,11 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">650.000,00 </td>
+        <td class="num">653.266,00 </td>
+        <td class="num">100,50 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Santa Cruz
+      </td>
+      
+        
+        
+        <td class="num">21.104.000,00 </td>
+        <td class="num">20.791.531,37 </td>
+        <td class="num">98,52 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">39.050.000,00 </td>
+        <td class="num">36.517.121,00 </td>
+        <td class="num">93,51 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Camiri
+      </td>
+      
+        
+        
+        <td class="num">450.000,00 </td>
+        <td class="num">370.000,00 </td>
+        <td class="num">82,22 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">852.240,00 </td>
+        <td class="num">711.000,00 </td>
+        <td class="num">83,43 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        San José de Chiquitos
+      </td>
+      
+        
+        
+        <td class="num">800.000,00 </td>
+        <td class="num">711.000,00 </td>
+        <td class="num">88,88 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">1.800.000,00 </td>
+        <td class="num">1.667.300,00 </td>
+        <td class="num">92,63 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Puerto Suarez
+      </td>
+      
+        
+        
+        <td class="num">450.000,00 </td>
+        <td class="num">540.000,00 </td>
+        <td class="num">120,00 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">650.000,00 </td>
+        <td class="num">720.000,00 </td>
+        <td class="num">110,77 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Sucre
+      </td>
+      
+        
+        
+        <td class="num">2.100.000,00 </td>
+        <td class="num">2.110.007,00 </td>
+        <td class="num">100,48 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">3.500.000,00 </td>
+        <td class="num">3.239.271,00 </td>
+        <td class="num">92,55 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Potosí
+      </td>
+      
+        
+        
+        <td class="num">2.200.000,00 </td>
+        <td class="num">2.180.895,00 </td>
+        <td class="num">99,13 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">3.500.000,00 </td>
+        <td class="num">3.461.778,00 </td>
+        <td class="num">98,91 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Tupiza
+      </td>
+      
+        
+        
+        <td class="num">300.000,00 </td>
+        <td class="num">279.500,00 </td>
+        <td class="num">93,17 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">1.000.000,00 </td>
+        <td class="num">776.600,00 </td>
+        <td class="num">77,66 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Uyuni
+      </td>
+      
+        
+        
+        <td class="num">600.000,00 </td>
+        <td class="num">594.000,00 </td>
+        <td class="num">99,00 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">950.000,00 </td>
+        <td class="num">942.000,00 </td>
+        <td class="num">99,16 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+    <tr>
+      <td>
+        Monteagudo
+      </td>
+      
+        
+        
+        <td class="num">130.000,00 </td>
+        <td class="num">118.500,00 </td>
+        <td class="num">91,15 %</td>
+        
+        
+        
+      
+        
+        
+        <td class="num">300.000,00 </td>
+        <td class="num">210.000,00 </td>
+        <td class="num">70,00 %</td>
+        
+        
+        
+      
+    </tr>
+    
+  
+  <tr class="bold">
+    <td>Total</td>
+  
+    <td class="num">74.794.000,00 </td>
+    <td class="num">72.417.132,17 </td>
+    <td class="num">96,82 %</td>
+  
+    <td class="num">104.822.240,00 </td>
+    <td class="num">93.571.404,10 </td>
+    <td class="num">89,27 %</td>
+  
+  </tr>
+</table>
+
+    </div>
+  </div>
+
+  <div id="saldos">
+    <h3 class="c_verde">Fuente: YPFB Logística</h3>
+    
+    <h2> Saldos del 29 de Junio de 2009</h2>
+
+<ul>
+  <li>GE = Gasolina Especial</li>
+  <li>DO = Diesel Oil</li>
+  <li>GP = Gasolina Premium</li>
+  <li>JF = Jet Fuel</li>
+  <li>KN = Kerosene</li>
+  <li>DO IMP = Diesel Oil Importado</li>
+</ul>
+<br/>
+<h4>Saldos en metros cúbicos</h4>
+<table class="grid">
+  <th class="ui-widget-header">Planta</th>
+  <th class="ui-widget-header">GE</th>
+  <th class="ui-widget-header">DO</th>
+  <th class="ui-widget-header">GP</th>
+  <th class="ui-widget-header">JF</th>
+  <th class="ui-widget-header">KN</th>
+  <th class="ui-widget-header">DO IMP</th>
+  <th class="ui-widget-header">GLP</th>
+  
+    <tr>
+      <td>Senkata</td>
+      <td class="num">2.306,97 </td>
+      <td class="num">689,31 </td>
+      <td class="num">29,24 </td>
+      <td class="num">1.385,88 </td>
+      <td class="num">988,69 </td>
+      <td class="num">1.041,13 </td>
+      <td class="num">989,65 </td>
+    </tr>
+  
+    <tr>
+      <td>Oruro</td>
+      <td class="num">105,07 </td>
+      <td class="num">438,38 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">118,12 </td>
+      <td class="num">177,80 </td>
+      <td class="num">142,72 </td>
+    </tr>
+  
+    <tr>
+      <td>Cochabamba</td>
+      <td class="num">1.315,65 </td>
+      <td class="num">3.012,43 </td>
+      <td class="num">7,23 </td>
+      <td class="num">0,00 </td>
+      <td class="num">171,89 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Pto.Villarroel</td>
+      <td class="num">597,35 </td>
+      <td class="num">1.538,17 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">1,66 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Trinidad</td>
+      <td class="num">489,33 </td>
+      <td class="num">952,23 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">3,77 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Riberalta</td>
+      <td class="num">287,71 </td>
+      <td class="num">40,85 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">49,91 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Santa Cruz</td>
+      <td class="num">4.124,24 </td>
+      <td class="num">10.152,42 </td>
+      <td class="num">0,60 </td>
+      <td class="num">419,48 </td>
+      <td class="num">40,56 </td>
+      <td class="num">3.507,80 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Camiri</td>
+      <td class="num">1.529,85 </td>
+      <td class="num">2.331,96 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">339,07 </td>
+      <td class="num">0,00 </td>
+      <td class="num">87,37 </td>
+    </tr>
+  
+    <tr>
+      <td>San José</td>
+      <td class="num">368,17 </td>
+      <td class="num">477,02 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">194,58 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Sucre</td>
+      <td class="num">586,96 </td>
+      <td class="num">981,61 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">229,78 </td>
+    </tr>
+  
+    <tr>
+      <td>Potosí</td>
+      <td class="num">861,12 </td>
+      <td class="num">1.144,59 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">61,97 </td>
+      <td class="num">0,00 </td>
+      <td class="num">43,31 </td>
+    </tr>
+  
+    <tr>
+      <td>Monteagudo</td>
+      <td class="num">77,48 </td>
+      <td class="num">64,45 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Uyuni</td>
+      <td class="num">267,15 </td>
+      <td class="num">231,50 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">79,19 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>Tarija</td>
+      <td class="num">703,29 </td>
+      <td class="num">452,65 </td>
+      <td class="num">15,41 </td>
+      <td class="num">0,00 </td>
+      <td class="num">139,84 </td>
+      <td class="num">282,77 </td>
+      <td class="num">70,50 </td>
+    </tr>
+  
+    <tr>
+      <td>Villa Montes</td>
+      <td class="num">595,57 </td>
+      <td class="num">530,59 </td>
+      <td class="num">1.736,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">31,97 </td>
+      <td class="num">0,00 </td>
+      <td class="num">59,74 </td>
+    </tr>
+  
+    <tr>
+      <td>Tupiza</td>
+      <td class="num">108,21 </td>
+      <td class="num">222,09 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+      <td class="num">0,00 </td>
+    </tr>
+  
+    <tr>
+      <td>TOTALES</td>
+      <td class="num">14.324,11 </td>
+      <td class="num">23.260,24 </td>
+      <td class="num">1.788,48 </td>
+      <td class="num">1.805,36 </td>
+      <td class="num">2.026,64 </td>
+      <td class="num">5.204,07 </td>
+      <td class="num">1.623,05 </td>
+    </tr>
+  
+
+</table>
+
+<a href="/saldos/63/edit">Edit</a> |
+<a href="/saldos">Back</a>
+  </div>
+</div>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#tabs').tabs();
+
+      //ProducionDiaria
+      $('#produccion-diaria').datepicker({
+        onSelect: function(fecha, obj) {
+          $('#produccionDiariaPartial').load('/reportses/produccion_diaria/' + fecha.toDB());
+        },
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true
+      });
+      $('#produccion>div.tab').tabs();
+
+      //Precios
+      $('#precios>div.tab').tabs();
+      $('#precios ul.listado a').click(function(){
+        var fecha = this.className.toDB();
+        $('#preciosGas').load('/reportses/precios/?fecha='+fecha+'&tipo=henry_hub');
+        $('#preciosPetroleo').load('/reportses/precios/?fecha='+fecha+'&tipo=wti');
+      });
+
+      // Recepciones
+      $('#recepciones li>a').click(function(){
+        var fecha = new Date().inicioDeMes(this.className).toDB();
+        $('#recepciones .in').load("/reportses/recepciones/?fecha="+fecha);
+      });
+
+      // Saldos
+      $('#saldos a').remove();
+    });
+  })(jQuery);
+</script>
+ 
+
+
+      <div style="clear:both; height: 20px"></div>
+    </div>
+    <div style="clear:both"></div>
+  </body>
+</html>

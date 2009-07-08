@@ -1,0 +1,23 @@
+<h1>Listing pruebas</h1>
+
+<table>
+  <tr>
+    <th>Nombre</th>
+  </tr>
+
+<% for prueba in @pruebas %>
+  <tr>
+    <td><%=h prueba.nombre %></td>
+    <td><%= link_to 'Show', prueba %></td>
+    <td><%= link_to 'Edit', edit_prueba_path(prueba) %></td>
+    <td><%= link_to 'Destroy', prueba, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<% @prueba1 = 'jejej' %>
+
+<div id="panel"></div>
+
+<%= link_to 'New prueba', new_prueba_path %>

@@ -1,0 +1,17 @@
+<h1>Recepciones en el mes <%= l @fecha, :format => "%B de %Y" %></h1>
+
+<%= form_tag("/recepciones/create") %>
+  <table class="grid">
+    <tr>
+      <th class="ui-widget-header">Zona Comercial</th>
+      <th class="ui-widget-header">Producto</th>
+      <th class="ui-widget-header">Programado</th>
+      <th class="ui-widget-header">Comercializado</th>
+      <th class="ui-widget-header">Cumplimiento</th>
+    </tr>
+  <%= render :partial => 'recepcion', :collection => @recepciones %>
+  </table>
+  <div class="input center" style="width:500px">
+    <input type="submit" value="Salvar" class="ui-state-default ui-corner-all" />
+  </div>
+</form>

@@ -1,0 +1,63 @@
+<%= render :partial => 'forma_importar'%>
+
+<% @campos_sel||= @campos.collect {|c| [ c.nombre, c.id ] } %>
+
+<h2>Crear Parte Diario del <span><%= @fecha %></span></h2>
+
+<div id="tabs">
+
+  <% if @original %>
+    <ul>
+      <li><a href="#formulario">Importado</a></li>
+      <li><a href="#original">Original</a></li>
+    </ul>
+  <% end %>
+
+  <div id="formulario">
+    <form method="post" action="/partes_diarios/create" id="parte_diario">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+      <input type="hidden" name="extra" value="<%= Time.now.to_f %>" />
+      <div class="input">
+        <input type="submit" value="Guardar" class="ui-state-default ui-corner-all grande" />
+      </div>
+      <table class="grid">
+            <tr>
+              <th  class="ui-widget-header">ID</th>
+              <th  class="ui-widget-header">Código</th>
+              <% @cols.each do |k| %>
+              <th  class="ui-widget-header"><%= k.humanize %></th>
+              <% end %>
+            </tr>
+            <%= render :partial => "parte_diario", :collection => @partes_diarios, :locals => {:cols => @cols, :campos => @campos} %>
+      </table>
+    </form>
+  </div>
+
+  <% if @original %>
+  <div id="original">
+
+      <ul style="color:#FFF; margin:10px;width:100px;">
+        <li class="verde" style="padding:4px">Importado</li>
+        <li class="rojo" style="padding:4px">No Importado</li>
+      </ul>
+
+    <table class="grid" style="color:#FFF">
+    <% @original.each do |fila| %>
+      <tr class="<%= fila[0] ? "verde": "rojo" %>">
+      <% (1..19).each do |col| %>
+        <td><%= fila[col] %></td>
+      <% end %>
+      </tr>
+    <% end %>
+    </table>
+  </div>
+  <script type="text/javascript">
+    (function($){
+      $(document).ready(function(){
+        $('#tabs').tabs();
+      });
+    })(jQuery)
+  </script>
+  <% end %>
+
+</div>

@@ -1,0 +1,38 @@
+<h2> Saldos del <%=l @saldo.fecha, :format => "%d de %B de %Y" %></h2>
+
+<ul>
+  <li>GE = Gasolina Especial</li>
+  <li>DO = Diesel Oil</li>
+  <li>GP = Gasolina Premium</li>
+  <li>JF = Jet Fuel</li>
+  <li>KN = Kerosene</li>
+  <li>DO IMP = Diesel Oil Importado</li>
+</ul>
+<br/>
+<h4>Saldos en metros cúbicos</h4>
+<table class="grid">
+  <th class="ui-widget-header">Planta</th>
+  <th class="ui-widget-header">GE</th>
+  <th class="ui-widget-header">DO</th>
+  <th class="ui-widget-header">GP</th>
+  <th class="ui-widget-header">JF</th>
+  <th class="ui-widget-header">KN</th>
+  <th class="ui-widget-header">DO IMP</th>
+  <th class="ui-widget-header">GLP</th>
+  <% @saldo.datos.each do |planta| %>
+    <tr>
+      <td><%= planta[:planta] %></td>
+      <td class="num"><%= ntc planta[:ge] %></td>
+      <td class="num"><%= ntc planta[:do] %></td>
+      <td class="num"><%= ntc planta[:gp] %></td>
+      <td class="num"><%= ntc planta[:jf] %></td>
+      <td class="num"><%= ntc planta[:kn] %></td>
+      <td class="num"><%= ntc planta[:doi] %></td>
+      <td class="num"><%= ntc planta[:glp] %></td>
+    </tr>
+  <% end %>
+
+</table>
+
+<%= link_to 'Edit', edit_saldo_path(@saldo) %> |
+<%= link_to 'Back', saldos_path %>

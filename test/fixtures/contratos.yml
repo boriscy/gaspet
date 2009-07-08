@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  nombre: Contrato1
+  codigo: C1
+  fecha: 2008-12-09
+
+two:
+  nombre: Contrato2
+  codigo: C2
+  fecha: 2008-12-09

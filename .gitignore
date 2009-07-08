@@ -1,0 +1,16 @@
+*.log
+tmp/*
+!pub.txt
+public/temp_files/*
+!public/temp_files/pub.txt
+*~
+nbproject/*
+*.kpf
+*.sqlite3
+config/database.yml
+public/informes/*
+!public/informes/pub.txt
+public/archivos/*
+!public/archivos/pub.txt
+*.swp
+*.swo

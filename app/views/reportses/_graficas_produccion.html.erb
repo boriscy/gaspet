@@ -1,0 +1,92 @@
+<% g =  GraphicsHidro.new() %>
+
+<div id="produccionGraficasPartial">
+  <h1>Producción GAS en mpc</h1>
+
+  <% ultimo = ParteDiario.first(:select => "MAX(fecha) as fecha") %>
+  <% fecha = data.last.fecha %>
+  <%  if ultimo.fecha == fecha; rango = (-2..0) ; else rango = (-1..1); end %>
+
+  <ul class="listado">
+    <% rango.each do |mes| %>
+      <% fec = (fecha.at_beginning_of_month + mes.month) %>
+    <li><a href="#" class="<%= fec.strftime("%d-%m-%Y") %>" ><%= l fec, :format => "%B - %Y" %></a></li>
+    <% end %>
+  </ul>
+  <div>
+    <div style="float:left">
+      <%= g.grafico_total_por_fecha(:data => data, :tipo => 'gas') %><br/><br/>
+    </div>
+    <div  style="float:left">
+      <table class="grid">
+        <tr>
+          <th class="ui-widget-header">Fecha</th>
+          <th class="ui-widget-header">Prod. en mpc</th>
+        </tr>
+      <% suma_gas = 0 %>
+      <% data.each do |gas| %>
+        <tr>
+          <td><%= l  gas.fecha, :format => "%d de %b %Y" %></td>
+          <td class="num"><%= ntc gas.entregado_gasoducto %></td>
+          <% suma_gas += gas.entregado_gasoducto.to_f %>
+        </tr>
+      <% end %>
+      <tr class="bold"><td>Total</td><td class="num"><%= ntc suma_gas %></td></tr>
+      </table>
+    </div>
+  </div>
+  <div style="clear:both"></div>
+  <br/>
+  <h1>Producción Líquidos en BBL</h1>
+  <div>
+    <div style="float:left">
+      <%= g.grafico_total_por_fecha(:data => data, :tipo => 'liquidos') %>
+    </div>
+
+
+    <div  style="float:left">
+      <table class="grid">
+        <tr>
+          <th class="ui-widget-header">Fecha</th>
+          <th class="ui-widget-header">Suma<br/>Líquidos</th>
+          <th class="ui-widget-header">Condensado</th>
+          <th class="ui-widget-header">Gasolina</th>
+          <th class="ui-widget-header">Petroleo</th>
+        </tr>
+      <% sum_liq, sum_condensado, sum_gasolina, sum_petroleo = 0, 0, 0, 0 %>
+      <% data.each do |gas| %>
+        <tr>
+          <td><%= l  gas.fecha, :format => "%d de %b %Y" %></td>
+          <td class="num"><%= ntc gas.liquidos %></td>
+          <td class="num"><%= ntc gas.condensado %></td>
+          <td class="num"><%= ntc gas.gasolina %></td>
+          <td class="num"><%= ntc gas.petroleo %></td>
+          <% sum_liq += gas.liquidos.to_f; sum_condensado += gas.condensado; sum_gasolina += gas.gasolina.to_f; sum_petroleo += gas.petroleo %>
+        </tr>
+      <% end %>
+      <tr class="bold">
+        <td>Total</td>
+        <td class="num"><%= ntc sum_liq %></td>
+        <td class="num"><%= ntc sum_condensado %></td>
+        <td class="num"><%= ntc sum_gasolina %></td>
+        <td class="num"><%= ntc sum_petroleo %></td>
+      </tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="clear:both"></div>
+
+</div>
+<script>
+  (function($){
+    $(document).ready(function() {
+      $('#produccionGraficasPartial ul.listado li a').click(function() {
+        var fecha = this.className;
+        var ini = new Date().inicioDeMes(fecha).toDB();
+        var fin = new Date().finDeMes(fecha).toDB();
+        $('#produccionGraficasPartial').load("/reportses/produccion_graficas/?fecha_ini=" + ini + "&fecha_fin=" + fin );
+      });
+    });
+  })(jQuery)
+</script>

@@ -1,0 +1,21 @@
+<h1>Editar precio</h1>
+
+<% form_for(@precio, :builder => CustomFormBuilder) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.text_field :fecha, :label => 'Fecha:', :class => 'fecha fechaon', :value => (l @precio.fecha, :format => "%d-%m-%y") %>
+  </p>
+  <p>
+    <%= f.text_field :henry_hub, :label => 'Henry Hub:' %>
+  </p>
+  <p>
+    <%= f.text_field :wti, :label => 'WTI:' %>
+  </p>
+  <p>
+    <%= f.submit 'Salvar' %>
+  </p>
+<% end %>
+
+<%= link_to 'Mostrar', @precio %> |
+<%= link_to 'Atras', precios_path %>

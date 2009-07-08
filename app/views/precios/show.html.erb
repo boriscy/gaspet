@@ -1,0 +1,18 @@
+<p>
+  <b>Fecha:</b>
+  <%=h l @precio.fecha, :format => "%d de %B de %Y" %>
+</p>
+
+<p>
+  <b>Henry hub:</b>
+  <%=h @precio.henry_hub %>
+</p>
+
+<p>
+  <b>Wti:</b>
+  <%=h @precio.wti %>
+</p>
+
+
+<%= link_to 'Editar', edit_precio_path(@precio) %> |
+<%= link_to 'Atras', precios_path %>

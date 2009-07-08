@@ -1,0 +1,11 @@
+<h2>REPORTE DIARIO</h2>
+<p><%= l(Time.now, :format => "%A %B")  %></p>
+<p>
+  <%= image_tag("/informes/gas-#{@fecha.to_date.to_s(:db)}.png") %>
+</p>
+<p>
+  <%= image_tag("/informes/liquidos-#{@fecha.to_date.to_s(:db)}.png") %>
+</p>
+<% @informes.each do |f|  %>
+  <%= f.try(:produccion) %><br>
+<% end %>

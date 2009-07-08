@@ -1,0 +1,24 @@
+Prueba
+jQuery('body').append('<div id="jeje" style="position:absolute; background: #FFF; border: 1px solid #000; padding: 4px">Presenta contenido</div>');
+
+jQuery('.boton_a').mouseover(function(){
+  var pos = jQuery(this).position();
+  var w = jQuery(this).outerWidth();
+  var h = jQuery(this).outerHeight();
+  jQuery('#jeje').show()
+  .css({top: pos.top+h, left: pos.left-20})
+  .html('Contenido es: '+this.id);
+}).mouseout(function(){
+jQuery('#jeje').hide();
+});
+
+/*jQuery('#tablaTareas').keydown(function(e){
+//if(e.keyCode >=37 && e.keyCode <=40) console.log('nav');
+console.log(jQuery(e.target));
+
+});*/
+
+//[2].cells[2];
+
+Añadido Carlos
+

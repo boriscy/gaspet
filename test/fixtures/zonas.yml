@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  nombre: Bolivia
+  parent_id:
+  tipo_zona_id: one
+  lft: 1
+  rgt: 1
+
+two:
+  nombre: La Paz
+  parent_id: 1
+  tipo_zona_id: one
+  lft: 1
+  rgt: 1

@@ -1,0 +1,26 @@
+<h2><%= operacion == 'SUM' ? 'Suma': 'Promedio'  %> de <%= fecha_ini %> al <%= fecha_fin %></h2>
+
+<div class="grid">
+  <ul>
+    <li>bbl = Barriles</li>
+    <li>mpc = Miles de pies cúbicos</li>
+    <li>mc = Metros cúbicos</li>
+  </ul>
+  <br/><br/>
+  <% if reporte.length > 0 %>
+    <table>
+      <caption>Total</caption>
+      <tr><th>Petroleo (bbl): </th><td class="right"><%= reporte.sigma("Petroleo").round(2) %></td></tr>
+      <tr><th>Condensado (bbl): </th><td class="right"><%= reporte.sigma("Condensado").round(2) %></td></tr>
+      <tr><th>Gasolina (bbl): </th><td class="right"><%= reporte.sigma("Gasolina").round(2) %></td></tr>
+      <tr><th>Gas Natural (mpc): </th><td class="right"><%= reporte.sigma("Produccion gas").round(2) %></td></tr>
+      <tr><th>GLP (mc): </th><td class="right"><%= reporte.sigma("Glp mc").round(2) %></td></tr>
+    </table>
+  <% else %>
+    <h3 class="advertencia">No Existen registros con los datos enviados !!!</h3>
+  <% end %>
+
+  <br/>
+
+  <%= reporte.to_html %>
+</div>

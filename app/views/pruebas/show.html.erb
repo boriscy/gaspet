@@ -1,0 +1,10 @@
+
+  w = new Ext.Panel({
+    width:200,
+    id: 'panel',
+    height: 300,
+    title: 'SI',
+    html: '<%= "#{render :partial => 'prueba1', :locals => {:prueba => 'Titular'}}".gsub(/\n/, '') %>',
+    renderTo: 'panel'
+  });
+  

@@ -1,0 +1,17 @@
+<h1>New saldo</h1>
+
+<% form_for(@saldo, :builder => CustomFormBuilder, :html =>{ :multipart => true}) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.text_field :fecha, :class => 'fecha fechaon', :label => 'Fecha:' %>
+  </p>
+  <p>
+    <%= f.file_field :datos, :label => 'Archivo:' %>
+  </p>
+  <p>
+    <%= f.submit 'Crear' %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', saldos_path %>

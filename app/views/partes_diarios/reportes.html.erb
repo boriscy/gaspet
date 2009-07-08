@@ -1,0 +1,68 @@
+<h2>Reportes</h2>
+
+
+<form>
+  <div class="input">
+    <label>Mes:</label>
+    <%=  date_select("reporte", "mes", :discard_day => true,:discard_year => true, :default => Time.now, :class => "bus") %>
+    <label>Año:</label>
+    <%=  date_select("reporte", "anio", :discard_day => true,:discard_month => true, :default => Time.now) %>
+
+  </div>
+  <div class="input">
+    <label for="fechas">Fecha Inicial:</label><input type="text" name="fecha_ini" id="fecha_ini" class="fecha"/>
+    <label for="fechas">Fecha Final:</label><input type="text" name="fecha_fin" id="fecha_fin" class="fecha"/>
+  </div>
+  <fieldset>
+    <legend>Operación:</legend>
+    <input type="radio" name="operacion" id="SUM" value="SUM" checked/><label for="SUM">Suma</label> <br/>
+    <input type="radio" name="operacion" id="AVG" value="AVG"/><label for="AVG">Promedio</label>
+  </fieldset>
+  <input type="submit" class="ui-state-default ui-corner-all" value="Buscar"/>
+</form>
+
+
+<div id="reporte"></div>
+
+<script type="text/javascript">
+  (function($){
+    $(document).ready(function(){
+      $('#fecha_ini').datepicker({
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true, mandatory: true,
+        onSelect: function(fecha) {
+          var fec = fecha.split("-");
+          //console.log(new Date(fec[2], fec[1]-1, fec[0]));
+          //$('#fechafin').datepicker({minDate: new Date(fec[2], fec[1]-1, fec[0])});
+        }
+      });
+      $('#fecha_fin').datepicker({
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, ShowButtonPanel: true, mandatory: true
+      });
+
+      /**
+      * Reporte
+      */
+      $('form').submit(function(){
+        a = $(this).serializeArray();
+        $.get('/partes_diarios/reportes/index.html', a, function(resp){
+          $('#reporte').html(resp).find(".grid th").addClass("ui-widget-header");
+        });
+        return false;
+      });
+
+      function cambiaMesAnio(){
+        var mes = $('#reporte_mes_2i').val();
+        var anio = $('#reporte_anio_1i').val();
+        var ini = new Date().inicioDeMes('01-' + mes + '-' + anio);
+        $('#fecha_ini').val(ini);
+        $("#fecha_fin").val(new Date().finDeMes('01-' + mes + '-' + anio));
+      }
+
+      $('select').change(function(){ cambiaMesAnio(); });
+      $('#fecha_ini').val(new Date().inicioDeMes());
+      $('#fecha_fin').val(new Date().finDeMes());
+    });
+  })(jQuery)
+</script>

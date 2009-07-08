@@ -1,0 +1,4 @@
+gem install roo
+gem install ruport
+gem install acts_as_reportable
+gem install thoughtbot-shoulda -s http://gems.github.com

@@ -1,0 +1,24 @@
+<style>
+  table{border-collapse: collapse}
+  table td{text-align: right}
+</style>
+<h1>Campos</h1>
+<table border="1">
+  <tr>
+    <th>Campo</th>
+    <th>Producción</th>
+    <th>Petroleo</th>
+    <th>Condensado</th>
+    <th>Densidad API</th>
+  </tr>
+<% @data.each do |v| %>
+  <tr>
+    <td><%= v[:campo] %></td>
+    <td><%= v[:produccion] %></td>
+    <td><%= v[:petroleo] %></td>
+    <td><%= v[:condensado] %></td>
+    <td><%= v[:den_api] %></td>
+  </tr>
+<% end %>
+</table>
+

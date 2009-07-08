@@ -1,0 +1,53 @@
+<% props = %w(programado comercializado cumplimiento) %>
+
+<h1>Recepciones <%= l recepciones.first.fecha ,:format => "%B de %Y" %></h1>
+
+<table class="grid">
+  <tr>
+    <th>&nbsp;</th>
+    <% zona = recepciones[0].zona_comercial_id %>
+    <% index ||= 0 %>
+    <% while zona == recepciones[index].zona_comercial_id %>
+      <th class="ui-widget-header" colspan="3"><%= recepciones[index].producto.nombre %> (en litros)</th>
+      <% index += 1 %>
+    <% end %>
+  </tr>
+  <tr>
+    <th class="ui-widget-header">Zona Comercial</th>
+    <% index.times do |i| %>
+      <th class="ui-widget-header">Programado</th>
+      <th class="ui-widget-header">Comercializado</th>
+      <th class="ui-widget-header">%<br/>Cumplimiento</th>
+    <% end %>
+  </tr>
+  
+  <% i = 0; tots = {}; index.times{|j| tots[j] = {}; props.each{|p| tots[j][p] = 0} } %>
+
+  <% while recepciones.size > i %>
+    <tr>
+      <td>
+        <%= recepciones[i].zona_comercial.nombre %>
+      </td>
+      <% index.times do |j| %>
+        <% i += j %>
+        <% begin %>
+        <td class="num"><%= ntc recepciones[i].programado %></td>
+        <td class="num"><%= ntc recepciones[i].comercializado %></td>
+        <td class="num"><%= ntc (100 * recepciones[i].comercializado/recepciones[i].programado) %>%</td>
+        <% tots[j]["programado"] += recepciones[i].programado %>
+        <% tots[j]["comercializado"] += recepciones[i].comercializado %>
+        <% rescue %>
+        <% end %>
+      <% end %>
+    </tr>
+    <% i += 1 %>
+  <% end %>
+  <tr class="bold">
+    <td>Total</td>
+  <% tots.each do |k, v| %>
+    <td class="num"><%= ntc v['programado'] %></td>
+    <td class="num"><%= ntc v['comercializado'] %></td>
+    <td class="num"><%= ntc (v['comercializado']/v['programado']) * 100 %>%</td>
+  <% end %>
+  </tr>
+</table>

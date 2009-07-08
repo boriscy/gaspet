@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  contrato_id: 1
+  empresa_id: 1
+
+two:
+  contrato_id: 2
+  empresa_id: 2

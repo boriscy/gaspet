@@ -1,0 +1,32 @@
+<style>
+  table th{
+    font-weigth: bold;
+  }
+</style>
+
+<% ParteDiario.columns.each do |v| %>
+    <%= v.name %>: 1.0<br>
+<% end %>
+
+<table>
+  <tr>
+    <th>Operador</th><th>Contrato</th><th>Area</th><th>Campo</th><th>Código</th>
+  </tr>
+  <%  @lista.each do |v| %>
+  <tr>
+    <td><%= v.area.contrato.empresa.nombre %></td>
+    <td><%= v.area.contrato.codigo %></td>
+    <td><%= v.area.nombre %></td>
+    <td><%= v.nombre %></td>
+    <td><%= v.codigo %></td>
+  </tr>
+  <%  end %>
+</table>
+
+<h2>Departamentos</h2>
+<%= Departamento.report_table.to_html %>
+
+<% @out = "<h2>Detalle de Campos</h2>" %>
+<% @out << ViewCamposDetalle.report_table(:all, :except =>[:campo_id]).to_html %>
+<%= @out %>
+

@@ -1,0 +1,170 @@
+<h1>Informe General</h1>
+
+<div id="tabs" style="width:100% !important; overflow:auto">
+  <ul>
+    <li><a href="#produccion">Produccion</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#mercado">Comercialización</a></li>
+    <li><a href="#recepciones">Recepciones (Gasolina - Diesel Oil)</a></li>
+    <li><a href="#saldos">Saldos Plantas</a></li>
+  </ul>
+  
+  <!--Producción -->
+  <div id="produccion">
+    <div class="tab">
+      <ul>
+        <li><a href="#produccionDiaria">Producción Diaria</a></li>
+        <li><a href="#produccionGraficas">Gráficas</a></li>
+      </ul>
+      
+      <div id="produccionDiaria">
+        <h3 class="c_verde">Fuente: Dirección Fiscalización YPFB</h3>
+        <% p = ParteDiario.parte_diario() %>
+        
+        <label>Fecha</label><input type="text" id="produccion-diaria" class="fecha" value="<%= p.first.fecha.strftime("%d-%m-%Y") %>"/>
+        
+        <div id="produccionDiariaPartial">
+          <%=  render :partial => 'produccion', :locals => {:p => p, :prod => "wti"} %>
+        </div>
+        <div style="clear:both"></div>
+      </div>
+      
+      <div id="produccionGraficas">
+        <% data = ParteDiario.total_por_fecha(@fecha) %>
+        <%= render :partial => 'graficas_produccion', :locals => {:data => data} %>
+      </div>
+    </div>
+  </div>
+  
+  <!--Grafica de Precios-->
+    
+  <div id="precios">
+    <% data = Precio.ultimos %>
+    <% fecha_fin = data[data.size - 1].fecha %>
+    
+    <div>
+      <ul class="listado">
+        <% (-2..0).each do |mes| %>
+          <% fecha = (fecha_fin + mes.months) %>
+          <li><a href="#" class="<%= fecha.strftime("%d-%m-%Y") %>"><%= l fecha, :format => "%B de %Y" %></a></li>
+        <% end %>
+      </ul>
+    </div>
+    
+    <div class="tab">
+      <ul>
+        <li><a href="#preciosNacionales">Precios Nacionales</a></li>
+        <li><a href="#preciosGas">GAS Internacional</a></li>
+        <li><a href="#preciosPetroleo">Petroleo Internacional</a></li>
+      </ul>
+
+      <div id="preciosNacionales">
+        <h3 class="c_verde">Fuente: Ministerio de Hidrocarburos</h3>
+        <h1>Precios de Exportación Gas (preliminares)</h1>
+
+        <table class="grid" class="fl">
+          <tr>
+            <tr><th class="ui-widget-header">QDCA (Brasil)</th><td class="num">4,29</td></tr>
+            <tr><th class="ui-widget-header">QDCB (Brasil)</th><td class="num">5,15</td></tr>
+            <tr><th class="ui-widget-header">Enarsa (Argentina)</th><td class="num">4,58</td></tr>
+          </tr>
+        </table>
+        <br/><br/>
+
+
+        <h1>Precios mercado interno (Bolivia) en bolivianos por litro</h1>
+        <table class="grid" class="fl">
+          <tr><th class="ui-widget-header">Gasolina Especial</th><td class="num">3,74</td></tr>
+          <tr><th class="ui-widget-header">Gasolina Premium</th><td class="num">4,79</td></tr>
+          <tr><th class="ui-widget-header">Gasolina Aviación</th><td class="num">4,57</td></tr>
+          <tr><th class="ui-widget-header">Kerosene</th><td class="num">2,72</td></tr>
+          <tr><th class="ui-widget-header">Jet Fuel Nacional</th><td class="num">2,77</td></tr>
+          <tr><th class="ui-widget-header">Jet Fuel Internacional</th><td class="num">5,86</td></tr>
+          <tr><th class="ui-widget-header">Diesel Oil Nacional</th><td class="num">3,72</td></tr>
+          <tr><th class="ui-widget-header">Agro Fuel</th><td class="num">2,55</td></tr>
+          <tr><th class="ui-widget-header">Gas Oil</th><td class="num">1,10</td></tr>
+          <tr><th class="ui-widget-header">Fuel Oil</th><td class="num">2,78</td></tr>
+          <tr><th class="ui-widget-header">Gas Licuado de Refineria</th><td class="num">2,25</td></tr>
+        </table>
+        <br/><br/>
+        <h4>Precios al Brasil del 2008 al 2009</h4>
+        <img src="/graficas/precios_brasil.gif" />
+        <h4>Precios a la Argentina del 2008 al 2009</h4>
+        <img src="/graficas/precios_argentina.gif" />
+
+      </div>
+
+      <div id="preciosGas">
+        <%= render :partial => 'precios', :locals => {:data => data, :tipo => 'henry_hub'} %>
+      </div>
+      <div id="preciosPetroleo">
+        <%= render :partial => 'precios', :locals => {:data => data, :tipo => 'wti'} %>
+      </div>
+    </div>
+  </div>
+  <!--Fin-->
+
+  <div id="mercado">
+    <h3 class="c_verde">Fuente: Viceministerio de Exploración y Explotación</h3>
+    <h2>Comercialización</h2>
+    <%= @report.precios  if @report %>
+  </div>
+
+  <div id="recepciones">
+    <h3 class="c_verde">Fuente: YPFB Dirección de Comercialización de Líquidos</h3>
+    <% fecha_fin = Recepcion.maximum("fecha") %>
+    <ul>
+      <% (-2..0).each do |mes| %>
+        <li>
+          <% fecha = fecha_fin + mes.months %>
+          <a href="#" class="<%= fecha.strftime("%d-%m-%Y") %>"><%= l fecha, :format => "%B de %Y" %></a>
+        </li>
+      <% end %>
+    </ul>
+    <div class="in">
+      <%= render :partial => 'recepciones', :object => Recepcion.ultimos %>
+    </div>
+  </div>
+
+  <div id="saldos">
+    <h3 class="c_verde">Fuente: YPFB Logística</h3>
+    <% @saldo = Saldo.first(:order => "fecha DESC") %>
+    <%= render :file => 'saldos/show' %>
+  </div>
+</div>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#tabs').tabs();
+
+      //ProducionDiaria
+      $('#produccion-diaria').datepicker({
+        onSelect: function(fecha, obj) {
+          $('#produccionDiariaPartial').load('/reportses/produccion_diaria/' + fecha.toDB());
+        },
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true
+      });
+      $('#produccion>div.tab').tabs();
+
+      //Precios
+      $('#precios>div.tab').tabs();
+      $('#precios ul.listado a').click(function(){
+        var fecha = this.className.toDB();
+        $('#preciosGas').load('/reportses/precios/?fecha='+fecha+'&tipo=henry_hub');
+        $('#preciosPetroleo').load('/reportses/precios/?fecha='+fecha+'&tipo=wti');
+      });
+
+      // Recepciones
+      $('#recepciones li>a').click(function(){
+        var fecha = new Date().inicioDeMes(this.className).toDB();
+        $('#recepciones .in').load("/reportses/recepciones/?fecha="+fecha);
+      });
+
+      // Saldos
+      $('#saldos a').remove();
+    });
+  })(jQuery);
+</script>
+ 
+

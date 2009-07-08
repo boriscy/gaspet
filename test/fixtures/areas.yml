@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  contrato: one
+  nombre: Area1
+  codigo: A1
+
+two:
+  contrato: two
+  nombre: Area2
+  codigo: A2

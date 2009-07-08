@@ -1,0 +1,41 @@
+<div id="importar">
+  <%= form_tag("/recepciones/import", :multipart => true) %>
+    <fieldset>
+      <legend>Importar Recepción</legend>
+    <div class="input">
+      <label>Fecha:</label>
+      <%= text_field :recepcion, :fecha, :class => 'fecha fechaon', :value => Date.today.strftime(DATE_FORMAT) %>
+    </div>
+    <div class="input">
+      <label>Recepción:</label>
+      <%= file_field :recepcion, :archivo %>
+    </div>
+    <div class="input center">
+      <input type="submit" value="Importar" class="ui-state-default ui-corner-all" />
+    </div>
+    </fieldset>
+  </form>
+</div>
+<a href="#" id="a_importar">Importar Recepción</a>
+<script type="text/javascript">
+  (function($){
+    $(document).ready(function() {
+      $("#importar").dialog({
+        bgiframe: true,
+        height: 150,
+        width: 500,
+        modal: true,
+        resizable: false, autoOpen: false,
+        overlay: {
+          backgroundColor: '#000',
+          opacity: 0.5
+        }
+      })
+    });
+
+    $('#a_importar').click(function(){
+      $('#importar').dialog("open");
+      $('#ui-datepicker-div').css({zIndex: 2000});
+    });
+  })(jQuery);
+</script>

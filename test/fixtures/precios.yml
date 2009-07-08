@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  fecha: 2009-04-15
+  henry_hub: 9.99
+  wti: 9.99
+
+two:
+  fecha: 2009-04-15
+  henry_hub: 9.99
+  wti: 9.99

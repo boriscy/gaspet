@@ -1,0 +1,768 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: FileBrowser</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">FileBrowser</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/lib/file_browser_rb.html">
+                lib/file_browser.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Helps to <a href="FileBrowser.html#M000021">browse</a> files and
+directories there are many initialized variables in intialize+
+@prohibited_extensions = [&quot;.rb&quot;, &quot;.erb&quot;,
+&quot;.py&quot;, &quot;.php&quot;, &quot;.cgi&quot;, &quot;.pl&quot;] Not
+alowed extension to <a href="FileBrowser.html#M000026">upload</a>
+@image_extensions = [&quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;,
+&quot;.gif&quot;, &quot;.svg&quot;] Image extensions so it creates
+thumbnails
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000021">browse</a>&nbsp;&nbsp;
+      <a href="#M000031">check_valid_file</a>&nbsp;&nbsp;
+      <a href="#M000023">copy</a>&nbsp;&nbsp;
+      <a href="#M000024">create_directory</a>&nbsp;&nbsp;
+      <a href="#M000029">create_thumbnail</a>&nbsp;&nbsp;
+      <a href="#M000025">delete_file</a>&nbsp;&nbsp;
+      <a href="#M000028">file_details</a>&nbsp;&nbsp;
+      <a href="#M000034">get_extension</a>&nbsp;&nbsp;
+      <a href="#M000027">get_icon</a>&nbsp;&nbsp;
+      <a href="#M000033">get_name</a>&nbsp;&nbsp;
+      <a href="#M000030">get_thumbnail</a>&nbsp;&nbsp;
+      <a href="#M000022">move</a>&nbsp;&nbsp;
+      <a href="#M000020">new</a>&nbsp;&nbsp;
+      <a href="#M000032">readable_file_size</a>&nbsp;&nbsp;
+      <a href="#M000026">upload</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000020" class="method-detail">
+        <a name="M000020"></a>
+
+        <div class="method-heading">
+          <a href="#M000020" class="method-signature">
+          <span class="method-name">new</span><span class="method-args">(dirname = 'files', thumbs = 'thumbs', size = '128x128', action = 'resize')</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Constructor for the class @param string dirname Path of the file directory
+@param string thumbs Directory for thumbs @param string size Size for the
+thumbnails @param string action
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000020-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/file_browser.rb, line 16</span>
+16:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">dirname</span> = <span class="ruby-value str">'files'</span>, <span class="ruby-identifier">thumbs</span> = <span class="ruby-value str">'thumbs'</span>, <span class="ruby-identifier">size</span> = <span class="ruby-value str">'128x128'</span>, <span class="ruby-identifier">action</span> = <span class="ruby-value str">'resize'</span>)
+17:     <span class="ruby-comment cmt">#Initial directory</span>
+18:     <span class="ruby-ivar">@dirname</span> = <span class="ruby-node">&quot;#{RAILS_ROOT}/public/files&quot;</span>
+19:     <span class="ruby-ivar">@dirlocal</span> = <span class="ruby-value str">'files'</span>
+20:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">dirname</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^[a-z]$/i</span>
+21:       <span class="ruby-ivar">@dirlocal</span> = <span class="ruby-identifier">dirname</span>
+22:       <span class="ruby-ivar">@dirname</span> = <span class="ruby-node">&quot;#{RAILS_ROOT}/public/#{dirname}&quot;</span>
+23:     <span class="ruby-keyword kw">end</span>
+24:     <span class="ruby-comment cmt">#thumbs directory</span>
+25:     <span class="ruby-ivar">@thumbs</span> = <span class="ruby-node">&quot;#{RAILS_ROOT}/public/thumbs&quot;</span>
+26:     <span class="ruby-ivar">@thumbslocal</span> = <span class="ruby-value str">'thumbs'</span>
+27:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">thumbs</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^[a-z]$/i</span>
+28:       <span class="ruby-ivar">@thumbslocal</span> = <span class="ruby-identifier">thumbs</span>
+29:       <span class="ruby-ivar">@thumbs</span> = <span class="ruby-node">&quot;#{RAILS_ROOT}/public/#{thumbs}&quot;</span>
+30:     <span class="ruby-keyword kw">end</span>
+31:     <span class="ruby-ivar">@size</span> = <span class="ruby-identifier">size</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^[1-9]+[0-9]*x[1-9]+[0-9]*$/</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">:</span> <span class="ruby-value str">'128x128'</span>
+32:     <span class="ruby-ivar">@action</span> = (<span class="ruby-identifier">action</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'resize'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">action</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'crop'</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">action</span> <span class="ruby-operator">:</span> <span class="ruby-value str">'resize'</span>
+33:     <span class="ruby-ivar">@thumbext</span> = <span class="ruby-value str">&quot;.jpg&quot;</span>
+34:     
+35:     <span class="ruby-comment cmt">#Not allowed extensions</span>
+36:     <span class="ruby-ivar">@prohibited_extensions</span> = [<span class="ruby-value str">&quot;.rb&quot;</span>, <span class="ruby-value str">&quot;.erb&quot;</span>, <span class="ruby-value str">&quot;.py&quot;</span>, <span class="ruby-value str">&quot;.php&quot;</span>, <span class="ruby-value str">&quot;.cgi&quot;</span>, <span class="ruby-value str">&quot;.pl&quot;</span>]
+37:     <span class="ruby-comment cmt">#Image Extensions</span>
+38:     <span class="ruby-ivar">@image_extensions</span> = [<span class="ruby-value str">&quot;.jpg&quot;</span>, <span class="ruby-value str">&quot;.jpeg&quot;</span>, <span class="ruby-value str">&quot;.png&quot;</span>, <span class="ruby-value str">&quot;.gif&quot;</span>, <span class="ruby-value str">&quot;.svg&quot;</span>]
+39: 
+40:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
+
+        <div class="method-heading">
+          <a href="#M000021" class="method-signature">
+          <span class="method-name">browse</span><span class="method-args">(dirname = '', dir = 'all')</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Browse files @param string dirname Directory for browsing @param string dir
+Tells to <a href="FileBrowser.html#M000021">browse</a> dirs or all files
+values are (all, dir, files) @return array hash returns an array with
+hashes obtained from self.file_details
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/file_browser.rb, line 46</span>
+46:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">browse</span>(<span class="ruby-identifier">dirname</span> = <span class="ruby-value str">''</span>, <span class="ruby-identifier">dir</span> = <span class="ruby-value str">'all'</span>)
+47:     <span class="ruby-identifier">files</span> = [];
+48:     <span class="ruby-identifier">dirname</span> = <span class="ruby-identifier">dirname</span> <span class="ruby-operator">==</span> <span class="ruby-value str">''</span> <span class="ruby-operator">?</span> <span class="ruby-ivar">@dirname</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">dirname</span>
+49: 
+50:     <span class="ruby-comment cmt">#Check if the directory exists</span>
+51:     <span class="ruby-keyword kw">begin</span>
+52:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span> <span class="ruby-identifier">dirname</span>
+53:     <span class="ruby-keyword kw">rescue</span>
+54:       <span class="ruby-keyword kw">return</span> {<span class="ruby-identifier">:success</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">:error=</span><span class="ruby-operator">&gt;</span> <span class="ruby-value str">'No existe el directorio seleccionado'</span>}
+55:     <span class="ruby-keyword kw">end</span>
+56:     
+57:     <span class="ruby-comment cmt">#Check if the directory is inside our @directory</span>
+58:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> ( <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">pwd</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{@dirname}/o</span>)
+59:       <span class="ruby-identifier">dirname</span> = <span class="ruby-ivar">@dirname</span>
+60:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-ivar">@dirname</span>)
+61:     <span class="ruby-keyword kw">else</span>
+62:       <span class="ruby-identifier">dirname</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">pwd</span>
+63:     <span class="ruby-keyword kw">end</span>
+64:     
+65:     <span class="ruby-identifier">files</span> = []
+66:     <span class="ruby-comment cmt">#Iterate trougth files and directories</span>
+67:     <span class="ruby-constant">Dir</span>[<span class="ruby-value str">&quot;*&quot;</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">filename</span><span class="ruby-operator">|</span>
+68:       <span class="ruby-identifier">icon</span> = <span class="ruby-identifier">get_icon</span> <span class="ruby-node">&quot;#{dirname}/#{filename}&quot;</span>
+69: 
+70:       <span class="ruby-identifier">date</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">ctime</span>(<span class="ruby-identifier">filename</span>).<span class="ruby-identifier">strftime</span>(<span class="ruby-constant">DATE_FORMAT</span>)
+71:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">dir</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'all'</span>
+72:         <span class="ruby-identifier">files</span>.<span class="ruby-identifier">push</span>( <span class="ruby-identifier">file_details</span> <span class="ruby-node">&quot;#{dirname}/#{filename}&quot;</span>, <span class="ruby-identifier">filename</span>)
+73:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">dir</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'dir'</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">icon</span>[<span class="ruby-identifier">:dir</span>]
+74:         <span class="ruby-identifier">files</span>.<span class="ruby-identifier">push</span>( {<span class="ruby-identifier">:text</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">filename</span>, <span class="ruby-identifier">:date</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">date</span>, <span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{dirname}/#{filename}&quot;</span> , <span class="ruby-identifier">:leaf</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">icon</span>[<span class="ruby-identifier">:dir</span>]} )
+75:       <span class="ruby-keyword kw">end</span>
+76:     <span class="ruby-keyword kw">end</span>
+77:     
+78:     {<span class="ruby-identifier">:files</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">files</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">dirname</span>}
+79:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
+
+        <div class="method-heading">
+          <a href="#M000023" class="method-signature">
+          <span class="method-name">copy</span><span class="method-args">(from, to)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Makes a <a href="FileBrowser.html#M000023">copy</a> of a file @param string
+from @param string to
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 117</span>
+117:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">copy</span>(<span class="ruby-identifier">from</span>, <span class="ruby-identifier">to</span>)
+118:     
+119:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
+
+        <div class="method-heading">
+          <a href="#M000024" class="method-signature">
+          <span class="method-name">create_directory</span><span class="method-args">(path, name)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Create directory @param string path @param string name @return @boolean ||
+hash self.file_details
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000024-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 125</span>
+125:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_directory</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">name</span>)
+126:     <span class="ruby-identifier">res</span> = {<span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{path}/#{name}&quot;</span>}
+127:     <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">path</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^[a-z0-9-_]+$/i</span>
+128:       <span class="ruby-keyword kw">begin</span>
+129:         <span class="ruby-identifier">mkdir</span> <span class="ruby-node">&quot;#{path}/#{name}&quot;</span>
+130:         <span class="ruby-identifier">mkdir</span> <span class="ruby-node">&quot;#{path.gsub(/^#{@dirname}/, @thumbs)}/#{name}&quot;</span>
+131:         <span class="ruby-identifier">res</span> = <span class="ruby-identifier">file_details</span> <span class="ruby-node">&quot;#{path}/#{name}&quot;</span>
+132:       <span class="ruby-keyword kw">rescue</span>
+133:         <span class="ruby-identifier">res</span>[<span class="ruby-identifier">:failed</span>]= <span class="ruby-keyword kw">true</span>
+134:       <span class="ruby-keyword kw">end</span>
+135:     <span class="ruby-keyword kw">end</span>
+136:     <span class="ruby-identifier">res</span>
+137:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
+
+        <div class="method-heading">
+          <a href="#M000025" class="method-signature">
+          <span class="method-name">delete_file</span><span class="method-args">(file)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Delete files or directories @param string file @return hash {:id =&gt;
+string, :deleted =&gt; boolean}
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000025-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 142</span>
+142:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete_file</span>(<span class="ruby-identifier">file</span>)
+143:     <span class="ruby-identifier">res</span> = {<span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file</span>, <span class="ruby-identifier">:deleted</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+144:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">file</span>
+145:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+146:     <span class="ruby-keyword kw">end</span>
+147:     <span class="ruby-keyword kw">begin</span>
+148:       <span class="ruby-identifier">ext</span> = <span class="ruby-identifier">get_extension</span> <span class="ruby-identifier">file</span>
+149:       <span class="ruby-comment cmt">#Delete thumb</span>
+150:       <span class="ruby-keyword kw">if</span> (<span class="ruby-ivar">@image_extensions</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ext</span>} <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>)
+151:         <span class="ruby-identifier">thumb</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-ivar">@thumbs</span>) <span class="ruby-operator">+</span> <span class="ruby-ivar">@thumbext</span>
+152:         <span class="ruby-identifier">rm_rf</span> <span class="ruby-identifier">thumb</span>
+153:       <span class="ruby-keyword kw">end</span>
+154:       <span class="ruby-comment cmt">#Delete the thumbnail Dir in case that it is a directory</span>
+155:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">file</span>)
+156:         <span class="ruby-identifier">thumb</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-ivar">@thumbs</span>)
+157:         <span class="ruby-identifier">rm_rf</span> <span class="ruby-identifier">thumb</span>
+158:       <span class="ruby-keyword kw">end</span>
+159:       <span class="ruby-identifier">rm_rf</span> <span class="ruby-identifier">file</span>
+160:       <span class="ruby-identifier">res</span>[<span class="ruby-identifier">:deleted</span>] = <span class="ruby-keyword kw">true</span>
+161:     <span class="ruby-keyword kw">rescue</span>
+162:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+163:     <span class="ruby-keyword kw">end</span>
+164:     <span class="ruby-identifier">res</span>
+165:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
+
+        <div class="method-heading">
+          <a href="#M000022" class="method-signature">
+          <span class="method-name">move</span><span class="method-args">(from, to)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Moves files from one dir to other @param string from @param string to
+@return hash self.file_details And also :success =&gt; boolean
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 85</span>
+ 85:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">move</span>(<span class="ruby-identifier">from</span>, <span class="ruby-identifier">to</span>)
+ 86:     <span class="ruby-comment cmt">#Check to see if the move is from a correct directory</span>
+ 87:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">from</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span> (<span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">to</span>)
+ 88:       <span class="ruby-keyword kw">return</span> {<span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">from</span>, <span class="ruby-identifier">:moved</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+ 89:     <span class="ruby-keyword kw">end</span>
+ 90:     
+ 91:     <span class="ruby-identifier">name</span> = <span class="ruby-identifier">get_name</span> <span class="ruby-identifier">from</span>
+ 92:     <span class="ruby-identifier">res</span> = {<span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">from</span>, <span class="ruby-identifier">:success</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+ 93:     <span class="ruby-keyword kw">begin</span>
+ 94:       <span class="ruby-comment cmt">#move file</span>
+ 95:       <span class="ruby-identifier">mv</span> <span class="ruby-identifier">from</span>, <span class="ruby-identifier">to</span>
+ 96:       <span class="ruby-comment cmt">#Move thumb if it is an image</span>
+ 97:       <span class="ruby-identifier">ext</span> = <span class="ruby-identifier">get_extension</span> <span class="ruby-identifier">from</span>
+ 98:       <span class="ruby-keyword kw">if</span> (<span class="ruby-ivar">@image_extensions</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ext</span>} <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>)
+ 99:         <span class="ruby-identifier">thumb_from</span> = (<span class="ruby-identifier">from</span>.<span class="ruby-identifier">gsub</span> <span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-ivar">@thumbs</span>) <span class="ruby-operator">+</span> <span class="ruby-ivar">@thumbext</span>
+100:         <span class="ruby-identifier">thumb_to</span> = <span class="ruby-identifier">to</span>.<span class="ruby-identifier">gsub</span> <span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-ivar">@thumbs</span>
+101:         <span class="ruby-identifier">mv</span> <span class="ruby-identifier">thumb_from</span>, <span class="ruby-identifier">thumb_to</span>
+102:       <span class="ruby-keyword kw">end</span>
+103:       <span class="ruby-comment cmt">#return data of the file</span>
+104:       <span class="ruby-identifier">filename</span> = <span class="ruby-node">&quot;#{to}/#{name}&quot;</span>
+105:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">file_details</span>(<span class="ruby-identifier">filename</span>)
+106:       <span class="ruby-identifier">res</span>[<span class="ruby-identifier">:success</span>] = <span class="ruby-keyword kw">true</span>
+107:     <span class="ruby-keyword kw">rescue</span>
+108:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">res</span>
+109:     <span class="ruby-keyword kw">end</span>
+110:     
+111:     <span class="ruby-identifier">res</span>
+112:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000026" class="method-detail">
+        <a name="M000026"></a>
+
+        <div class="method-heading">
+          <a href="#M000026" class="method-signature">
+          <span class="method-name">upload</span><span class="method-args">(file, path)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Uploads a file @param binary file File to be uploaded @param string path
+Path where to store the file @return hash {:success =&gt; false, :error
+=&gt; string} || self.file_details path (Call function <a
+href="FileBrowser.html#M000028">file_details</a>)
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000026-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000026-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 171</span>
+171:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">upload</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">path</span>)
+172:     <span class="ruby-identifier">ret</span> = {<span class="ruby-identifier">:success</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-identifier">:error</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">''</span>}
+173:     <span class="ruby-comment cmt"># Check if it is a valid directory</span>
+174:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">path</span>
+175:       <span class="ruby-keyword kw">return</span> {<span class="ruby-identifier">:success</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">:error</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'El directorio destino no existe'</span>}
+176:     <span class="ruby-keyword kw">end</span>
+177:     <span class="ruby-comment cmt"># Check if the extension is allowed</span>
+178:     <span class="ruby-identifier">ext</span> = <span class="ruby-identifier">get_extension</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">original_filename</span>
+179:     <span class="ruby-keyword kw">if</span> (<span class="ruby-ivar">@prohibited_extensions</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ext</span>})
+180:       <span class="ruby-keyword kw">return</span> {<span class="ruby-identifier">:success</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">:error</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'No se permite guardar este tipo de archivos'</span>}
+181:     <span class="ruby-keyword kw">end</span>
+182: 
+183:     <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">file</span>.<span class="ruby-identifier">original_filename</span>)
+184:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span> <span class="ruby-identifier">path</span>
+185:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">&quot;wb&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>) }
+186:     <span class="ruby-keyword kw">else</span>
+187:       <span class="ruby-identifier">ret</span>[<span class="ruby-identifier">:success</span>] = <span class="ruby-keyword kw">false</span>
+188:       <span class="ruby-identifier">ret</span>[<span class="ruby-identifier">:error</span>] = <span class="ruby-value str">'Existe un archivo con el mismo nombre'</span>
+189:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">ret</span>
+190:     <span class="ruby-keyword kw">end</span>
+191:     <span class="ruby-comment cmt">#Create a thumbnail</span>
+192:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">content_type</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^image/</span>
+193:       <span class="ruby-identifier">created</span> = <span class="ruby-identifier">create_thumbnail</span> <span class="ruby-identifier">path</span>
+194:     <span class="ruby-keyword kw">end</span>
+195:     <span class="ruby-identifier">ret</span>[<span class="ruby-identifier">:file</span>] = <span class="ruby-identifier">file_details</span> <span class="ruby-identifier">path</span>
+196:     <span class="ruby-identifier">ret</span>
+197:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Protected Instance methods</h3>
+
+      <div id="method-M000031" class="method-detail">
+        <a name="M000031"></a>
+
+        <div class="method-heading">
+          <a href="#M000031" class="method-signature">
+          <span class="method-name">check_valid_file</span><span class="method-args">(filename)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Checks if the file is valid @param string filename @return boolean
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000031-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000031-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 292</span>
+292:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_valid_file</span> <span class="ruby-identifier">filename</span>
+293:     <span class="ruby-comment cmt">#check if it has parents</span>
+294:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">filename</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/(\.){2}/</span>
+295:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+296:     <span class="ruby-keyword kw">end</span>
+297:     <span class="ruby-comment cmt">#Check root folder</span>
+298:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">filename</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/^#{@dirname}/o</span>)
+299:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+300:     <span class="ruby-keyword kw">end</span>
+301: 
+302:     <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">filename</span>)
+303:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000029" class="method-detail">
+        <a name="M000029"></a>
+
+        <div class="method-heading">
+          <a href="#M000029" class="method-signature">
+          <span class="method-name">create_thumbnail</span><span class="method-args">(image)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Creates a thumbnail image @param string path @return boolean More
+information on how to manage images can be found at <a
+href="http://www.imagemagick.org/script/index.php">www.imagemagick.org/script/index.php</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000029-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000029-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 272</span>
+272:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_thumbnail</span>(<span class="ruby-identifier">image</span>)
+273:     <span class="ruby-identifier">thumb</span> = ( <span class="ruby-identifier">image</span>.<span class="ruby-identifier">gsub</span> <span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-node">&quot;#{@thumbs}&quot;</span> ) <span class="ruby-operator">+</span> <span class="ruby-ivar">@thumbext</span>
+274:     <span class="ruby-identifier">system</span>(<span class="ruby-node">&quot;convert #{image} -thumbnail '#{@size}&gt;' -#{@action} '#{@size}' -background white -quality 60 -gravity center -extent #{@size} #{thumb}&quot;</span>)
+275:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000028" class="method-detail">
+        <a name="M000028"></a>
+
+        <div class="method-heading">
+          <a href="#M000028" class="method-signature">
+          <span class="method-name">file_details</span><span class="method-args">(filename, name='')</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Returns the file details of a file @param string filename @param string
+name @return hash {:text =&gt; string, :date =&gt;
+string(format&#8217;%d-%m-%Y&#8217;), :imgsrc =&gt; string, :smallicon
+=&gt; string, :id =&gt; string , :leaf =&gt; boolean, :size =&gt; string
+(Readable formar of size) )}
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000028-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000028-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 260</span>
+260:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">file_details</span>(<span class="ruby-identifier">filename</span>, <span class="ruby-identifier">name</span>=<span class="ruby-value str">''</span>)
+261:     <span class="ruby-identifier">name</span> = (<span class="ruby-identifier">name</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">''</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">get_name</span>(<span class="ruby-identifier">filename</span>)
+262:     <span class="ruby-identifier">icon</span> = <span class="ruby-identifier">get_icon</span> <span class="ruby-identifier">filename</span>
+263:     <span class="ruby-keyword kw">return</span> {<span class="ruby-identifier">:text</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:date</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">ctime</span>(<span class="ruby-identifier">filename</span>).<span class="ruby-identifier">strftime</span>(<span class="ruby-constant">DATE_FORMAT</span>), <span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">icon</span>[<span class="ruby-identifier">:imgsrc</span>],
+264:     <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">icon</span>[<span class="ruby-identifier">:smallicon</span>], <span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">filename</span> , <span class="ruby-identifier">:leaf</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">icon</span>[<span class="ruby-identifier">:dir</span>],
+265:     <span class="ruby-identifier">:size</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">readable_file_size</span>( <span class="ruby-constant">File</span>.<span class="ruby-identifier">size</span>(<span class="ruby-identifier">filename</span>) )}
+266:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000034" class="method-detail">
+        <a name="M000034"></a>
+
+        <div class="method-heading">
+          <a href="#M000034" class="method-signature">
+          <span class="method-name">get_extension</span><span class="method-args">(path)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Obtains the extension from a path or name @param string path @return string
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000034-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000034-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 329</span>
+329:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_extension</span>(<span class="ruby-identifier">path</span>)
+330:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">path</span>[<span class="ruby-regexp re">/^.+(\.[a-z0-9]+)$/i</span>, <span class="ruby-value">1</span>]
+331:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000027" class="method-detail">
+        <a name="M000027"></a>
+
+        <div class="method-heading">
+          <a href="#M000027" class="method-signature">
+          <span class="method-name">get_icon</span><span class="method-args">(filename)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Returns an image icon for a file @param string filename @return hash
+{:imgsrc =&gt; string, :smallicon =&gt; string, :dir =&gt; boolean}
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000027-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000027-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 205</span>
+205:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_icon</span>(<span class="ruby-identifier">filename</span>)
+206:     <span class="ruby-identifier">ext</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">extname</span>(<span class="ruby-identifier">filename</span>)
+207:     <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">''</span>, <span class="ruby-identifier">:smallicon=</span><span class="ruby-operator">&gt;</span> <span class="ruby-value str">''</span>}
+208:     <span class="ruby-identifier">ext</span>.<span class="ruby-identifier">downcase!</span>
+209:      <span class="ruby-keyword kw">case</span> <span class="ruby-keyword kw">true</span>
+210:        <span class="ruby-keyword kw">when</span> (<span class="ruby-ivar">@image_extensions</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ext</span>} <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>)
+211:          <span class="ruby-identifier">icon</span> = <span class="ruby-identifier">get_thumbnail</span> <span class="ruby-identifier">filename</span>
+212:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">icon</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/eye.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+213:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.doc'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.docx'</span><span class="ruby-comment cmt"># Word</span>
+214:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/word.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_white_word.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+215:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.xls'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.xlsx'</span><span class="ruby-comment cmt"># Excel</span>
+216:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/excel.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_excel.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+217:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.ppt'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.pps'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.pptx'</span> <span class="ruby-comment cmt"># Power Point</span>
+218:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/powerpoint.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_white_powerpoint.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+219:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.odt'</span> <span class="ruby-comment cmt"># OpenOffice writer</span>
+220:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/oo_writer_v2.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/oo_writer.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+221:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.ods'</span> <span class="ruby-comment cmt"># OpenOffice calc</span>
+222:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/oo_calc_v2.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/oo_calc.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+223:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.odg'</span> <span class="ruby-comment cmt"># OpenOffice draw</span>
+224:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/oo_draw_v2.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/oo_draw.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+225:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.odp'</span> <span class="ruby-comment cmt"># OpenOffice impress</span>
+226:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/oo_impress_v2.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/oo_impress.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+227:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.pdf'</span> <span class="ruby-comment cmt"># PDF</span>
+228:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/pdf.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_white_acrobat.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+229:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.html'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.htm'</span><span class="ruby-comment cmt"># HTML</span>
+230:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/firefox.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/firefox.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+231:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.mov'</span><span class="ruby-comment cmt"># Quicktime</span>
+232:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/quicktime.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/quicktime.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+233:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'mpg'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'mpeg'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.asf'</span>
+234:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/windowsmedia.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/windowsmedia.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+235:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.txt'</span><span class="ruby-comment cmt"># TXT</span>
+236:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/page.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_white.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+237:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.wav'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.mp3'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.ogg'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.wma'</span><span class="ruby-comment cmt">#Sound</span>
+238:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/sound.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/sound.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+239:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.swf'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.fla'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.flv'</span><span class="ruby-comment cmt"># Flash</span>
+240:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/flash.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/page_white_actionscript.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+241:        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">ext</span> <span class="ruby-operator">==</span> <span class="ruby-value str">''</span>
+242:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">filename</span>)
+243:             <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/folder.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/folder.gif'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>}
+244:           <span class="ruby-keyword kw">else</span>
+245:             <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/window.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/application.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+246:           <span class="ruby-keyword kw">end</span>
+247:        <span class="ruby-keyword kw">else</span>
+248:          <span class="ruby-identifier">img</span> = {<span class="ruby-identifier">:imgsrc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/bigicons/exec.jpg'</span>, <span class="ruby-identifier">:smallicon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'../images/icons/application.png'</span>, <span class="ruby-identifier">:dir</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>}
+249:     <span class="ruby-keyword kw">end</span>
+250:     
+251:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">img</span>
+252:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000033" class="method-detail">
+        <a name="M000033"></a>
+
+        <div class="method-heading">
+          <a href="#M000033" class="method-signature">
+          <span class="method-name">get_name</span><span class="method-args">(path)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Obtains the name from a path @param string path @return string
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000033-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000033-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 322</span>
+322:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_name</span>(<span class="ruby-identifier">path</span>)
+323:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">path</span>[<span class="ruby-regexp re">/^.*\/(.+?)\/?$/</span>, <span class="ruby-value">1</span>]
+324:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000030" class="method-detail">
+        <a name="M000030"></a>
+
+        <div class="method-heading">
+          <a href="#M000030" class="method-signature">
+          <span class="method-name">get_thumbnail</span><span class="method-args">(image)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Returns the thumbnail of an image in case that it exists @param string
+image @return string
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000030-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000030-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 280</span>
+280:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_thumbnail</span>(<span class="ruby-identifier">image</span>)
+281:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> ( ( <span class="ruby-identifier">image</span>.<span class="ruby-identifier">gsub</span> <span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-node">&quot;#{@thumbs}&quot;</span> ) <span class="ruby-operator">+</span> <span class="ruby-ivar">@thumbext</span>)
+282:       <span class="ruby-identifier">image</span> = ( <span class="ruby-identifier">image</span>.<span class="ruby-identifier">gsub</span> <span class="ruby-node">/^#{@dirname}/</span>, <span class="ruby-node">&quot;#{@thumbslocal}&quot;</span> ) <span class="ruby-operator">+</span> <span class="ruby-ivar">@thumbext</span>
+283:     <span class="ruby-keyword kw">else</span>
+284:       <span class="ruby-identifier">image</span> = <span class="ruby-value str">'../images/bigicons/image.jpg'</span>
+285:     <span class="ruby-keyword kw">end</span>
+286:     <span class="ruby-identifier">image</span>
+287:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000032" class="method-detail">
+        <a name="M000032"></a>
+
+        <div class="method-heading">
+          <a href="#M000032" class="method-signature">
+          <span class="method-name">readable_file_size</span><span class="method-args">(size, precision = 1)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Presents in a readable size format of a file @param integer size @param
+integer precision @return string
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000032-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000032-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/file_browser.rb, line 309</span>
+309:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">readable_file_size</span>(<span class="ruby-identifier">size</span>, <span class="ruby-identifier">precision</span> = <span class="ruby-value">1</span>)
+310:     <span class="ruby-keyword kw">case</span>
+311:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;1 Byte&quot;</span>
+312:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">KILO_SIZE</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;%d Bytes&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">size</span>
+313:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MEGA_SIZE</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;%.#{precision}f KB&quot;</span> <span class="ruby-operator">%</span> (<span class="ruby-identifier">size</span> <span class="ruby-operator">/</span> <span class="ruby-constant">KILO_SIZE</span>)
+314:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">GIGA_SIZE</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;%.#{precision}f MB&quot;</span> <span class="ruby-operator">%</span> (<span class="ruby-identifier">size</span> <span class="ruby-operator">/</span> <span class="ruby-constant">MEGA_SIZE</span>)
+315:       <span class="ruby-keyword kw">else</span> <span class="ruby-node">&quot;%.#{precision}f GB&quot;</span> <span class="ruby-operator">%</span> (<span class="ruby-identifier">size</span> <span class="ruby-operator">/</span> <span class="ruby-constant">GIGA_SIZE</span>)
+316:     <span class="ruby-keyword kw">end</span>
+317:   <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

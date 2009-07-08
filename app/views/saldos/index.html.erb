@@ -1,0 +1,21 @@
+<h1>Listing saldos</h1>
+
+<table>
+  <tr>
+    <th>Fecha</th>
+    <th>Datos</th>
+  </tr>
+
+<% @saldos.each do |saldo| %>
+  <tr>
+    <td><%=h l saldo.fecha, :format => "%d de %B de %Y" %></td>
+    <td><%= link_to 'Show', saldo %></td>
+    <td><%= link_to 'Edit', edit_saldo_path(saldo) %></td>
+    <td><%= link_to 'Destroy', saldo, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New saldo', new_saldo_path %>

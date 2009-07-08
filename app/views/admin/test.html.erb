@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>Admin GASPET</title>
+
+  <% @ext_plugins = "../ext/plugins" %>
+  <% @ext_rails = "../ext/rails" %>
+
+  <script type="text/javascript">
+  Ext.BLANK_IMAGE_URL = "../ext/resources/images/default/s.gif";
+  Ext.namespace('Rails');
+  PAGE_SIZE = 30;
+  </script> 
+</head>
+<body>
+<%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
+
+
+<script type="text/javascript">
+  ROOT_FILES = "<%= "#{RAILS_ROOT}/public/files" %>";
+  ROOT_THUMBS = "<%= "#{RAILS_ROOT}/public/thumbs"  %>";
+<% reg = /#{RAILS_ROOT}\/public\//.to_s %>
+  ROOT_PUBLIC_REGEX = new RegExp(/^<%= reg.slice( 7, (reg.length - 8) ) %>/);
+
+  //Presents an error message window
+  Ext.Ajax.on('requestexception', function(conn, resp, opt) {
+    error = new Ext.Window({ title: 'Error', html: resp.responseText, width:640, height: 480, autoScroll: true});
+    error.show();
+  });
+
+
+  checkBoxDis = function(config) {
+    Ext.apply(this, config)
+  }
+  Ext.extend(checkBoxDis, Ext.util.Observable, {
+    init: function(tree) {
+      this.tree = tree;
+      this.tree.on('checkchange', this.disableChildren, this);
+    },
+    disableChildren: function(node, e) {
+      var val = node.getUI().checkbox.checked;
+      this.setCheckboxValue(node, val);
+    },
+    setCheckboxValue: function(node, val) {
+      Ext.each(node.childNodes, function(item){
+        if(val) {
+          item.getUI().checkbox.checked = false;
+          item.disable();
+        }else{
+          item.enable();
+        }
+        if(item.childNodes.length > 0) {
+          this.setCheckboxValue(item, val);
+        }
+      }, this);
+    }
+  });
+
+  Ext.form.Field.prototype.msgTarget = 'side';
+
+/*
+  Ext.onReady(function() {
+
+    
+      new Ext.tree.TreePanel({
+        id : 'arbol',
+        bodyStyle:'background: transparent',
+        title: 'Menú',
+        root : new Ext.tree.AsyncTreeNode({
+          id: 'raiz',
+          draggable : false,
+          expanded : true,
+          children : [{
+             text: 'primero', checked: false,
+             children: [{
+                 text: 'sub', checked: false, children:[]
+             }]
+          },{
+            text: 'segundo', checked: true, 
+            children:[{
+                text: 'Sub seg', checked: true,
+                children: [{
+                    text: 'sub seg a',checked: true,
+                },{
+                  text: 'sub seb b',checked: true, 
+                }]
+            }]
+          }],
+          iconCls : 'rails-root'
+        }),
+        renderTo: 'main',
+        width: 300,
+        height: 500,
+        plugins: [new checkBoxDis()]
+      })
+   
+  });
+*/
+  
+</script>
+  <div id="main" style="margin-top:115px"></div>
+</body>
+</html>

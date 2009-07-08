@@ -1,0 +1,47 @@
+<a href="#" id="link-importar"><img src="/images/icons/page_white_excel.png" alt="Importar archivo" /> Importar Parte Diario</a>
+<div id="forma-importar" style="display:none">
+  <form method="POST" enctype="multipart/form-data" action="/partes_diarios/importar/">
+    <input type="hidden" name="athenticity_time" value="<%= Time.now.to_f %>" />
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>"  />
+    <div class="input">
+      <label for="fecha">Fecha:</label>
+      <input type="text" name="fecha" id="fecha" value="<%= Time.now.strftime("%d-%m-%Y") %>" class="fecha"/>
+    </div>
+    <div class="input">
+      <label for="archivo">Parte diario:</label>
+      <input type="file" name="archivo" id="archivo"/>
+    </div>
+    <div class="input center">
+      <input type="submit" value="Importar" class="ui-state-default ui-corner-all" />
+    </div>
+  </form>
+</div>
+<script type="text/javascript">
+(function($){
+  $(document).ready(function(){
+    $('#forma-importar #fecha').datepicker({
+      onSelect: function(fecha) {
+        $('#fecha-hidden').val(fecha);
+      },
+      showOn: 'button', buttonImage: '/images/calendar.gif',
+      buttonImageOnly: true, showButtonPanel: true
+    });
+    $("#forma-importar").dialog({
+      bgiframe: true,
+      height: 150,
+      width: 400,
+      modal: true,
+      resizable: false, autoOpen: false,
+      overlay: {
+        backgroundColor: '#000',
+        opacity: 0.5
+      }
+    });
+
+    $('#link-importar').click(function(){
+      $("#forma-importar").dialog("open");
+      $('#ui-datepicker-div').css({zIndex: 2000});
+    });
+  });
+ })(jQuery);
+</script>

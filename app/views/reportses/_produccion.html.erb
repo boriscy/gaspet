@@ -1,0 +1,51 @@
+<div style="float:left">
+  
+  <h1>Informe diario de Producción</h1>
+  <h1>Fecha: <%= l p[0].fecha, :format => "%d de %B de %Y" %></h1>
+
+    
+    <ul>
+      <li class="bold">mpc: Miles de pies cúbicos</li>
+      <li class="bold">MMmc: Millones de metros cúbicos</li>
+      <li class="bold">bbl: Barriles</li>
+    </ul>
+    <br/><br/>
+    <% gasolina, petroleo, condensado, gas = 0, 0 ,0, 0 %>
+    <% p.each{|v| gasolina += v.gasolina; petroleo += v.petroleo; condensado += v.condensado; gas += v.entregado_gasoducto } %>
+
+    <% liquidos = gasolina + petroleo + condensado %>
+    <h3>Total GAS y Líquidos</h3>
+    <table class="grid">
+      <tr><th class="ui-widget-header">Gas (mpc):</th><td class="num"><%= ntc gas %></td></tr>
+      <tr><th class="ui-widget-header">Gas (MMmc):</th><td class="num"><%= ntc((0.0283*gas) / 1000) %></td></tr>
+      <tr><th class="ui-widget-header">Líquidos (bbl):</th><td class="num"><%= ntc liquidos %></td></tr>
+    </table>
+    <br/>
+    <h3>Total Componentes líquidos</h3>
+    <table class="grid">
+      <tr><th class="ui-widget-header">Petroléo (bbl):</th><td class="num"><%= ntc petroleo %></td></tr>
+      <tr><th class="ui-widget-header">Condensado (bbl):</th><td class="num"><%= ntc condensado %></td></tr>
+      <tr><th class="ui-widget-header">Gasolina (bbl):</th><td class="num"><%= ntc gasolina %></td></tr>
+    </table>
+    <br/>
+    <br/>
+</div>
+
+<div style="float:left">
+    <h2>Detalle por Campo</h2>
+    <table class="grid">
+      <tr>
+        <th class="ui-widget-header">Campo</th>
+        <th class="ui-widget-header">Gas (mpc)</th>
+        <th class="ui-widget-header">Líquidos (bbl)</th>
+      </tr>
+      <% p.each do |prod| %>
+      <tr>
+        <td><%= ntc prod.campo.nombre %></td>
+        <td class="num"><%= ntc prod.entregado_gasoducto %></td>
+        <% tot = prod.condensado + prod.gasolina + prod.petroleo %>
+        <td class="num"><%= ntc tot %></td>
+      </tr>
+      <% end %>
+    </table>
+  </div>

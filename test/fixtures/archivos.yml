@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  zona_id: 1
+  nombre: MyString
+  archivo: MyString
+  fecha: 2008-11-24
+
+two:
+  zona_id: 1
+  nombre: MyString
+  archivo: MyString
+  fecha: 2008-11-24

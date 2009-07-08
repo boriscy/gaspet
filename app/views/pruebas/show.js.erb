@@ -1,0 +1,9 @@
+  w = new Ext.Panel({
+    width:200,
+    id: 'panel',
+    height: 300,
+    title: 'Erb JS',
+    html: '<%= "#{render :partial => 'prueba1', :locals => {:prueba => 'Titular'}}".squish %>',
+    renderTo: 'centro'
+  });
+  

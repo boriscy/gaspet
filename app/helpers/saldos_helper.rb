@@ -1,0 +1,2 @@
+module SaldosHelper
+end

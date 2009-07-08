@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>GASPET - Sistema de información hidrocarburifera</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <%= stylesheet_link_tag 'style.css', "../javascripts/jquery-ui/themes/smoothness/jquery-ui-1.7.1.custom.css", "formtastic", "formtastic_changes" %>
+    <%= javascript_include_tag "jquery-1.3.2.min.js", "jquery-ui/jquery-ui-1.7.1.custom.min.js", "jquery-ui/ui/i18n/ui.datepicker-es.js", "superfish.js" %>
+    <%= javascript_include_tag "application.js" %>
+    <script>
+<%= "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
+  PAGE_SIZE = 30;
+  /**
+   * Funciones de Formato
+   */
+  /*Number.prototype.por = function () {
+  return this.toFixed(2)+'%';
+}
+   */
+  (function($){
+    $.ajaxSetup ({
+      type : "GET",
+      dataType : "html",
+      beforeSend : function (xhr) {
+        $('#cargando').show();
+      },
+      error : function(event){
+        $('#cargando').hide(1000);
+        $('#debug-error').html(event.responseText).dialog();
+      },
+      complete : function(event){
+        $('#cargando').hide(1000);
+      },
+      success : function(event){
+        $('#cargando').hide(1000);
+      }
+    });
+
+    $(document).ready(function() {
+      $('form').submit(function(){
+        $('#cargando').show();
+      });
+
+      /*
+       * Inicializacion del menu
+       **/
+      $("ul.sf-menu").superfish();
+
+      /**
+       * Permite que todos los campos con clase fecha puedan tener un date format
+       */
+      function setDates() {
+        $('input.fecha').datepicker({showOn: 'button', buttonImage: '/images/calendar.gif', buttonImageOnly: true, showButtonPanel: true});
+      }
+
+      $('#cont').css({width: $(window).width()*1 - (202 + 8) + 'px'});
+      $(window).resize(function(){
+        $('#cont').css({width: $(this).width()*1 - (202 + 8) + 'px'});
+      });
+
+      $('.resizable').resizable();
+
+      $('.fechaon').datepicker({
+        showOn: 'both', buttonImage: '/images/calendar.gif',
+        buttonImageOnly: true, showButtonPanel: true
+      });
+      /*
+    function setMenu() {
+      $('#menu ul ul').hide();
+      $('#menu li').each(function(i, elem) {
+        if($(elem).children('ul').length > 0) {
+          $(elem).click(function(){
+            //console.log($(this).children('ul'));
+            $(this).children('ul').toggle();
+          });
+        }
+      });
+    }
+    setMenu();
+       */
+
+      $("#debug-error").dialog({
+        bgiframe: true, height: 500, width: 800,
+        modal: true, resizable: false, autoOpen: false,
+        overlay: {
+          backgroundColor: '#000', opacity: 0.5
+        }
+      });
+      // Presenta un mensaje de error si falla el Ajax
+      jQuery('#debug-error').ajaxError( function(event, resp, settings){
+        $("#debug-error").dialog("open").html(resp.responseText);
+      });
+    });
+  })(jQuery);
+
+    </script>
+  </head>
+  <body>
+    <div class="ui-widget" id="error-msg" style="width:300px; position:absolute; display:none; margin: 0px; z-index:10000">
+      <div class="ui-state-error ui-corner-all" style="padding: 0.7em;">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+        <strong>Error:</strong> <div class="msg"></div></p>
+      </div>
+    </div>
+
+    <div id="debug-error" style="display:none; width: 640px; overflow: auto; z-index: 10000"></div>
+
+    <div class="ui-corner-all" id="cargando">
+      <div class="x-panel-header"><%= image_tag('preloader.gif') %> Cargando...</div>
+    </div>
+
+    <div id="encabezado" class="ui-state-default">
+      <ul class="sf-menu">
+        <li><a class="ui-state-default" href="#">Partes Diarios</a>
+          <ul>
+            <li><a class="ui-state-default" href="/partes_diarios/">Importar</a></li>
+            <li><a class="ui-state-default" href="/partes_diarios/reportes">Reportes</a></li>
+          </ul>
+        </li>
+        <li><a class="ui-state-default" href="/reportses">Reportes</a></li>
+      </ul>
+    </div>
+
+    <div id="cont">
+
+      <%= flash_messages %>
+
+      <%= yield %>
+      <div style="clear:both; height: 20px"></div>
+    </div>
+    <div style="clear:both"></div>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<% @campos_sel||= @campos.collect {|c| [ c.nombre, c.id ] } %>
+<% unless defined? @cont; @cont = 1; else; @cont+=1; end %>
+<% #@campos_hash||= @campos.collect{|c| {c.id => c.codigo }} %>
+<% campo = (@campos.detect{|cam| cam.id == parte_diario.campo_id}).codigo unless parte_diario.campo_id.nil? %>
+<tr>
+  <td><%= select("parte_diario[#{@cont}]", "campo_id", @campos_sel, {:include_blank => true, :selected => parte_diario.campo_id },{
+  :error => parte_diario.errors[:campo_id], :class => ("error" if parte_diario.errors[:campo_id])}) %></td>
+  <td><%= campo %></td>
+    <input type="hidden" name="parte_diario<%= "[#{@cont}][id]" %>" />
+    <input type="hidden" name="parte_diario<%= "[#{@cont}][fecha]" %>" value="<%= @fecha %>"/>
+  </td>
+  <% cols.each do |k| %>
+    <td><input type="text" name="parte_diario<%= "[#{@cont}][#{k}]" %>" value="<%= parte_diario[k] %>"
+               class="dec <%= "error" if parte_diario.errors[k] %>" error="<%= parte_diario.errors[k] %>"/></td>
+  <% end %>
+</tr>
